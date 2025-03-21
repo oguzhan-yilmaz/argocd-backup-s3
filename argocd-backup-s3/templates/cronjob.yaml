@@ -3,7 +3,9 @@ kind: CronJob
 metadata:
   name: argocd-backup-s3
 spec:
+  {{ if .Values.timeZone }}
   timeZone: {{ .Values.timeZone }}
+  {{ end }}
   schedule: {{ .Values.schedule | quote }}
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 5
