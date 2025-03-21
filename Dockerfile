@@ -3,7 +3,9 @@ FROM argoproj/argocd:latest as argocd
 
 
 FROM debian:bookworm-slim
+
 LABEL org.opencontainers.image.source https://github.com/oguzhan-yilmaz/argocd-backup-s3
+LABEL org.opencontainers.image.description TODO 
 
 ENV DEBIAN_FRONTEND=noninteractive
 
