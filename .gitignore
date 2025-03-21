@@ -1,0 +1,2 @@
+.vscode/
+.github/workflows/helm-package-and-publish.yaml

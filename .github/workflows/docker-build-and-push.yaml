@@ -1,0 +1,46 @@
+name: Build and publish Docker image to ghcr.io
+on:
+  # publish on releases, e.g. v2.1.13 (image tagged as "2.1.13" - "v" prefix is removed)
+  push:
+    tags:
+      - "v*.*.*" 
+
+env:
+  REGISTRY: ghcr.io
+  DOCKER_IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build-and-push--docker-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: dockermetadata
+        uses: docker/metadata-action@v4
+        with:
+          images:  ${{ env.REGISTRY }}/${{ env.DOCKER_IMAGE_NAME }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=ref,event=branch
+  
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.dockermetadata.outputs.tags }}
+          labels: ${{ steps.dockermetadata.outputs.labels }}
+          file: ./Dockerfile
