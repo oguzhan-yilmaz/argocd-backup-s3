@@ -59,6 +59,7 @@ jobs:
         env:
           MESSAGE: ${{ steps.helm_package.outputs.package-name}}
 
+      # ${{ steps.argocd-application.outputs.argocd-application-filename}}
       - name: Create new Release and upload helm artifact
         id: create_release_and_upload_artifacts
         uses: softprops/action-gh-release@v2.0.8
@@ -66,7 +67,6 @@ jobs:
         with:
           files: |
             ${{ steps.helm_package.outputs.package-name}}
-            # ${{ steps.argocd-application.outputs.argocd-application-filename}}
           token: ${{ secrets.GHCR_TOKEN }}
           generate_release_notes: true
           fail_on_unmatched_files: true
