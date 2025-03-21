@@ -1,0 +1,181 @@
+name: Helm package and push to Github Pages
+on:
+  push:
+    # run the Github Action on every tag versioned as v*.*.*
+    tags:
+      - "v*.*.*" 
+
+jobs:
+  helm-package-and-push-to-gh-pages-branch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Install Helm + yq + jq
+        run: |
+          sudo snap install yq
+          sudo snap install helm --classic
+          sudo snap install jq
+
+      - name: Helm Package
+        id: helm_package
+        run: |
+          echo "Tag version: $GITHUB_REF"
+          RELEASE_TAG="${GITHUB_REF#refs/tags/}"
+          VERSION="${RELEASE_TAG:-v666.666.666}"
+          echo "VERSION Version: $VERSION"
+          CLEAN_VERSION="${VERSION#v}"
+          echo "CLEAN_VERSION Version: $CLEAN_VERSION"
+
+          # package the helm chart
+          PACKAGE_OUTPUT=$(helm package --version "$CLEAN_VERSION" argocd-backup-s3)
+          echo "PACKAGE_OUTPUT=$PACKAGE_OUTPUT"
+          PACKAGE_NAME=$(basename "$PACKAGE_OUTPUT")
+          echo "Generated helm package: $PACKAGE_NAME"
+          # save the generated package name to github_output to pass it to next step
+          echo "package-name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+          echo "package-version=$CLEAN_VERSION" >> $GITHUB_OUTPUT
+      
+
+      # - name: Patch argocd application yaml
+      #   id: argocd-application
+      #   run: |
+      #     VERSIONED_ARGOCD_APP_YAML="argocd-application-${{ steps.helm_package.outputs.package-version}}.yaml"
+      #     cp argocd-app.yaml "$VERSIONED_ARGOCD_APP_YAML"
+      #     echo "Current targetRevision: $(yq '.spec.source.targetRevision' $VERSIONED_ARGOCD_APP_YAML)"
+      #     yq e '.spec.source.targetRevision = "${{ steps.helm_package.outputs.package-version}}"' --inplace $VERSIONED_ARGOCD_APP_YAML
+      #     echo "Patched targetRevision: $(yq '.spec.source.targetRevision' $VERSIONED_ARGOCD_APP_YAML)"
+      #     # save to the github_output to pass it to next step
+      #     echo "argocd-application-filename=$VERSIONED_ARGOCD_APP_YAML" >> $GITHUB_OUTPUT
+      
+      - name: Print helm_package step output
+        run: |
+          echo "package-name=$MESSAGE"
+        env:
+          MESSAGE: ${{ steps.helm_package.outputs.package-name}}
+
+      - name: Create new Release and upload helm artifact
+        id: create_release_and_upload_artifacts
+        uses: softprops/action-gh-release@v2.0.8
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            ${{ steps.helm_package.outputs.package-name}}
+            # ${{ steps.argocd-application.outputs.argocd-application-filename}}
+          token: ${{ secrets.GHCR_TOKEN }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          body: |
+            **Helm Repo**
+
+            ```bash
+            helm repo add argocd-backup-s3 https://oguzhan-yilmaz.github.io/argocd-backup-s3
+
+            helm repo update argocd-backup-s3
+            ```
+            TODO: HERE!!!!
+
+            **Helm Install (latest version)**
+
+            ```bash
+            helm upgrade --install argocd-backup-s3 \
+              -n argocd \
+              argocd-backup-s3/argocd-backup-s3
+            ```
+            
+            **Helm Install (current version)**
+
+            ```bash
+            helm show values argocd-backup-s3/argocd-backup-s3--version ${{ steps.helm_package.outputs.package-version}} > argocd-backup-s3-values.yaml
+
+            # update the argocd-backup-s3-values.yaml on your own accord
+
+            helm upgrade --install argocd-backup-s3 \
+              --version ${{ steps.helm_package.outputs.package-version}} \
+              argocd-backups-s3/argocd-backups-s3
+            ```
+
+            **ArgoCD Application (latest version)**
+            
+            You can use the `argocd-app.yaml` manifest in the Github repo: <https://github.com/oguzhan-yilmaz/argocd-backups-s3/blob/main/argocd-app.yaml>
+
+            ```bash
+            kubectl apply -f https://raw.githubusercontent.com/oguzhan-yilmaz/argocd-backups-s3/refs/heads/main/argocd-app.yaml
+            ```
+
+            **ArgoCD Application (current version)**
+
+            First, download the `argocd-application-${{ steps.helm_package.outputs.package-version}}.yaml` from assets.
+
+            ```bash
+            kubectl apply -f argocd-application-${{ steps.helm_package.outputs.package-version}}.yaml
+            ```
+
+            **References**
+
+            - Github Repo: <https://github.com/oguzhan-yilmaz/argocd-backups-s3>
+            - Github Releases: <https://github.com/oguzhan-yilmaz/argocd-backups-s3/releases>
+            - Github Pages: <https://oguzhan-yilmaz.github.io/argocd-backups-s3/>
+            - Github Pages (Helm index): <https://oguzhan-yilmaz.github.io/argocd-backups-s3/index.yaml>
+            
+
+      - name: print release upload output
+        run: |
+          echo "assets=${{ steps.create_release_and_upload_artifacts.outputs.assets}}"
+          
+      - name: Save artifact download url
+        id: helm_package_download_url
+        run: |
+          DOWNLOAD_URL=$(echo '${{ steps.create_release_and_upload_artifacts.outputs.assets}}' | jq '.[0].browser_download_url')
+          echo "DOWNLOAD_URL=$DOWNLOAD_URL"
+          echo "download_url=$DOWNLOAD_URL" >> $GITHUB_OUTPUT
+
+      - name: Print uploaded helm_package download url
+        run: |
+          echo 'package-name=${{ steps.helm_package_download_url.outputs.download_url}}'
+
+      - name: Clone gh-pages branch and update helm index.yaml on github pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GHCR_TOKEN }}
+          GIT_AUTHOR_EMAIL: "Oguzhan Yilmaz"
+          GIT_AUTHOR_NAME: "oguzhanylmz271@gmail.com"
+        run: |
+          git config --global user.email "oguzhanylmz271@gmail.com"
+          git config --global user.name "Oguzhan Yilmaz"
+          git remote set-url origin https://x-access-token:${{ secrets.GHCR_TOKEN }}@github.com/oguzhan-yilmaz/argocd-backup-s3.git
+          # clone gh-pages branch
+          git clone -b gh-pages https://github.com/oguzhan-yilmaz/argocd-backup-s3.git gh-pages-clone
+          ls -al
+          ls -al gh-pages-clone
+
+          # merge the helm index.yaml
+          ACTUAL_RELEASE_URL="${{ steps.helm_package_download_url.outputs.download_url}}"
+          RELEASE_BASE_URL="${ACTUAL_RELEASE_URL%/*}"
+          echo "RELEASE_BASE_URL=$RELEASE_BASE_URL"
+          helm repo index . --url "$RELEASE_BASE_URL" --merge gh-pages-clone/index.yaml
+          ls -al
+
+          # replace the index.yaml with the new one
+          echo "Old index.yaml"
+          cat gh-pages-clone/index.yaml
+          rm gh-pages-clone/index.yaml
+          cp index.yaml gh-pages-clone/index.yaml
+          
+          # check out the new index.yaml
+          cd gh-pages-clone
+          pwd
+          echo "New index.yaml"
+          cat index.yaml
+          git status
+
+          # commit and push the new index.yaml
+          git add index.yaml
+          git commit -m "update index.yaml in Github Action"
+          git remote set-url origin https://x-access-token:${{ secrets.GHCR_TOKEN }}@github.com/oguzhan-yilmaz/argocd-backup-s3.git
+          git push
+          git status
