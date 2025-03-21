@@ -75,5 +75,5 @@ spec:
           restartPolicy: OnFailure
           securityContext:
             runAsNonRoot: true
-            runAsUser: 11234
-            runAsGroup: 11234
+            runAsUser: 12345
+            runAsGroup: 12345
