@@ -3,6 +3,16 @@ entries:
   argocd-backup-s3:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2025-03-23T19:54:40.4046028Z"
+    description: TODO
+    digest: bea9fbb1f550ce61f396c4d7cd66b22ec3e32bd898d53b1927ffad47fbeeb77a
+    name: argocd-backup-s3
+    type: application
+    urls:
+    - https://github.com/oguzhan-yilmaz/argocd-backup-s3/releases/download/v0.1.6/argocd-backup-s3-0.1.6.tgz
+    version: 0.1.6
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2025-03-21T20:08:28.571177621Z"
     description: TODO
     digest: 6908a24242c3b4687e7d65672520ddca07777252166eb9268061332a44c16858
@@ -31,4 +41,4 @@ entries:
     urls:
     - https://github.com/oguzhan-yilmaz/argocd-backup-s3/releases/download/v0.1.3/argocd-backup-s3-0.1.3.tgz
     version: 0.1.3
-generated: "2025-03-21T20:08:28.570604718Z"
+generated: "2025-03-23T19:54:40.404023307Z"
