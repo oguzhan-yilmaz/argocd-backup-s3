@@ -1,0 +1,73 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-backup-s3
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://oguzhan-yilmaz.github.io/argocd-backup-s3/
+    targetRevision: '*.*.*' 
+
+    chart: argocd-backup-s3
+    helm:
+      releaseName: argocd-backup-s3
+
+      # Values file as block file. This takes precedence over values
+      # -----------------------------------------------
+      valuesObject:
+        todo: "TODO! HERE"
+        
+        # comment out the timeZone if you want to keep things default
+        timeZone: 'Asia/Istanbul'
+        schedule: "00 20 * * *"
+
+        serviceAccount: argocd-server
+
+        secrets:
+          AWS_ACCESS_KEY_ID: ""
+          AWS_SECRET_ACCESS_KEY: ""
+          AWS_DEFAULT_REGION: ""
+          ARGOCD_SERVER: ""
+          ADMIN_PASSWORD: ""
+          S3_UPLOAD_PREFIX: ""
+          S3_BUCKET_NAME: ""
+
+
+        resources:
+          limits:
+            memory: "256Mi"
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+
+        image:
+          repository: "ghcr.io/oguzhan-yilmaz/argocd-backup-s3"
+          tag: "latest"
+          pullPolicy: Always
+      # -----------------------------------------------
+
+  # Destination cluster and namespace to deploy the application
+  destination:
+    name: in-cluster
+    namespace: monitoring
+    # namespace: monitoring
+
+  # Extra information to show in the Argo CD Application details tab
+  info:
+    - name: 'Github Repo'
+      value: 'https://github.com/oguzhan-yilmaz/argocd-backup-s3'
+
+  # Sync policy
+  syncPolicy:
+    automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
+      prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
+      selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
+    syncOptions:     # Sync options which modifies sync behavior
+    - Validate=false # disables resource validation (equivalent to 'kubectl apply --validate=false') ( true by default ).
+    - CreateNamespace=true # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
+    - PrunePropagationPolicy=foreground # Supported policies are background, foreground and orphan.
+    - PruneLast=true # Allow the ability for resource pruning to happen as a final, implicit wave of a sync operation
+    - ApplyOutOfSyncOnly=true # Only sync out-of-sync resources, rather than applying every object in the application
+
+  revisionHistoryLimit: 5
