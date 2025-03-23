@@ -3,7 +3,7 @@ timeZone: 'Asia/Istanbul'
 schedule: "00 20 * * *"
 
 
-secrets:
+secretEnvVars:
   AWS_ACCESS_KEY_ID: ""
   AWS_SECRET_ACCESS_KEY: ""
   AWS_DEFAULT_REGION: ""
@@ -14,7 +14,7 @@ secrets:
 
 envVarSecretReferences: []
 # envVarSecretReferences:
-#   # remove the .secrets.ARGOCD_ADMIN_PASSWORD if you use this
+#   # remove the .secretEnvVars.ARGOCD_ADMIN_PASSWORD if you use this
 #   - name: ARGOCD_ADMIN_PASSWORD
 #     valueFrom:
 #       secretKeyRef:
