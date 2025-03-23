@@ -2,17 +2,24 @@
 timeZone: 'Asia/Istanbul'
 schedule: "00 20 * * *"
 
-serviceAccount: argocd-server
 
 secrets:
   AWS_ACCESS_KEY_ID: ""
   AWS_SECRET_ACCESS_KEY: ""
   AWS_DEFAULT_REGION: ""
   ARGOCD_SERVER: ""
-  ADMIN_PASSWORD: ""
+  ARGOCD_ADMIN_PASSWORD: ""
   S3_UPLOAD_PREFIX: ""
   S3_BUCKET_NAME: ""
 
+envVarSecretReferences: []
+# envVarSecretReferences:
+#   # remove the .secrets.ARGOCD_ADMIN_PASSWORD if you use this
+#   - name: ARGOCD_ADMIN_PASSWORD
+#     valueFrom:
+#       secretKeyRef:
+#         name: argocd-initial-admin-secret
+#         key: password
 
 resources:
   limits:
