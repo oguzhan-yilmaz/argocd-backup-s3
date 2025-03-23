@@ -94,7 +94,7 @@ jobs:
             **Helm Install (current version)**
 
             ```bash
-            helm show values argocd-backup-s3/argocd-backup-s3--version ${{ steps.helm_package.outputs.package-version}} > argocd-backup-s3-values.yaml
+            helm show values argocd-backup-s3/argocd-backup-s3 --version ${{ steps.helm_package.outputs.package-version}} > argocd-backup-s3-values.yaml
 
             # update the argocd-backup-s3-values.yaml on your own accord
 
