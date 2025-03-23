@@ -24,12 +24,9 @@ COPY --from=argocd /usr/local/bin/argocd /usr/local/bin/argocd
 
 # Print all binaries in PATH
 # CMD find $(echo $PATH | tr ':' ' ') -type f -executable -exec basename {} \; | sort
-
-# COPY entrypoint.sh .
-# ENTRYPOINT [ "bash", "entrypoint.sh" ]
-
-USER argocdbackup
 WORKDIR /home/argocdbackup
 
-CMD echo "You should override the Dockerfile CMD - Aborting.."; sleep 3s; echo "BYE!";
+COPY entrypoint.sh .
+ENTRYPOINT [ "bash", "entrypoint.sh" ]
 
+USER argocdbackup
