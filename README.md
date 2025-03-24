@@ -2,6 +2,9 @@
 
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/argocd-backup-s3)](https://artifacthub.io/packages/helm/argocd-backup-s3/argocd-backup-s3)
 
+[ghcr.io Package](https://github.com/oguzhan-yilmaz/argocd-backup-s3/pkgs/container/argocd-backup-s3)
+
+
 ```bash
 manual trigger
 kubectl create job -n argocd --from=cronjob/backup-job manual-backup-1
