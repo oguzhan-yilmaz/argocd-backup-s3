@@ -2,13 +2,22 @@
 
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/argocd-backup-s3)](https://artifacthub.io/packages/helm/argocd-backup-s3/argocd-backup-s3)
 
-[ghcr.io Package](https://github.com/oguzhan-yilmaz/argocd-backup-s3/pkgs/container/argocd-backup-s3)
+[ghcr.io - Docker Image](https://github.com/oguzhan-yilmaz/argocd-backup-s3/pkgs/container/argocd-backup-s3)
 
 
 ```bash
 manual trigger
 kubectl create job -n argocd --from=cronjob/backup-job manual-backup-1
 ```
+## Dependencies
+
+### ArgoCD CLI Access for export
+Follow the documentation: [ArgoCD Server Addr. and admin pass](Dependencies.README.md#argocd-cli-access)
+
+### AWS S3 Bucket and IAM User Access Keys
+
+Follow the documentation: [Bash script for creating S3 Bucket and IAM User Access Keys](Dependencies.README.md#aws-s3-bucket-and-access-credentials)
+
 
 
 ## Install with Helm
@@ -21,6 +30,19 @@ helm repo update argocd-backup-s3
 helm install -n argocd \
     argocd-backup-s3 argocd-backup-s3/argocd-backup-s3
 ```
+
+<!-- 
+```bash
+git clone ..
+cd abcdefg
+
+
+# vim values.yaml
+
+helm install -n argocd \
+    argocd-backup-s3 ./argocd-backup-s3
+```
+ -->
 
 ## Install with ArgoCD
 
