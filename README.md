@@ -9,7 +9,7 @@
 manual trigger
 kubectl create job -n argocd --from=cronjob/backup-job manual-backup-1
 ```
-## Dependencies
+## [Dependencies](Dependencies.README.md)
 
 ### ArgoCD CLI Access for export
 Follow the documentation: [ArgoCD Server Addr. and admin pass](Dependencies.README.md#argocd-cli-access)
