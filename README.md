@@ -13,7 +13,7 @@ kubectl create job -n argocd --from=cronjob/backup-job manual-backup-1
 
 ## Install with Helm
 
-## Helm Repository
+### Helm Repository
 
 ```bash
 helm repo add argocd-backup-s3 https://oguzhan-yilmaz.github.io/argocd-backup-s3/
@@ -21,20 +21,20 @@ helm repo add argocd-backup-s3 https://oguzhan-yilmaz.github.io/argocd-backup-s3
 helm repo update argocd-backup-s3
 ```
 
-## Helm Repository
+### Helm Repository
 
 ```bash
 helm show values argocd-backup-s3/argocd-backup-s3 > my-argocd-backup-s3.values.yaml
 ```
 
-## Helm Values
+### Helm Values
 
-### [Helm Values Dependencies](Dependencies.README.md)
+#### [Helm Values Dependencies](Dependencies.README.md)
 
-#### ArgoCD CLI Access for export
+##### ArgoCD CLI Access for export
 Follow the documentation: [ArgoCD Server Addr. and admin pass](Dependencies.README.md#argocd-cli-access)
 
-#### AWS S3 Bucket and IAM User Access Keys
+##### AWS S3 Bucket and IAM User Access Keys
 
 Follow the documentation: [Bash script for creating S3 Bucket and IAM User Access Keys](Dependencies.README.md#aws-s3-bucket-and-access-credentials)
 
