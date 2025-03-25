@@ -28,6 +28,19 @@ Get the default `values.yaml` in order to edit.
 helm show values argocd-backup-s3/argocd-backup-s3 > my-argocd-backup-s3.values.yaml
 ```
 
+You need to fill out the following variables:
+
+```yaml
+secretEnvVars:
+  AWS_ACCESS_KEY_ID: ""
+  AWS_SECRET_ACCESS_KEY: ""
+  AWS_DEFAULT_REGION: ""
+  ARGOCD_SERVER: ""
+  ARGOCD_ADMIN_PASSWORD: ""
+  S3_UPLOAD_PREFIX: ""
+  S3_BUCKET_NAME: ""
+```
+
 ### [Helm Values Dependencies](Dependencies.README.md)
 
 #### ArgoCD CLI Access for export
