@@ -8,7 +8,7 @@
 # PREFIX="${PREFIX:-argocd-backup-s3}"
 PREFIX="mycompany-argocd-backup-s3"
 ```
-#### Get AWS Account ID
+#### Get AWS Account Info
 
 ```bash
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
@@ -17,7 +17,7 @@ AWS_REGION=$(aws configure get region 2>/dev/null || echo "eu-west-1")
 echo "AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID}"
 echo "AWS_REGION: ${AWS_REGION}"
 ```
-#### Create bucket name using AWS Account ID as suffix
+#### Create S3 Bucket
 
 
 ```bash
@@ -26,12 +26,10 @@ IAM_USER_NAME="${BUCKET_NAME}"
 
 echo "BUCKET_NAME: ${BUCKET_NAME}"
 echo "IAM_USER_NAME: ${IAM_USER_NAME}"
-```
 
-#### Create S3 Bucket
-
-```bash
 echo "Creating S3 Bucket: s3://${BUCKET_NAME}"
+
+# Create bucket name using AWS Account ID as suffix
 aws s3 mb "s3://${BUCKET_NAME}" --region "${AWS_REGION}"
 ```
 
@@ -40,13 +38,10 @@ aws s3 mb "s3://${BUCKET_NAME}" --region "${AWS_REGION}"
 ```bash
 echo "Creating IAM User: s3://${IAM_USER_NAME}"
 aws iam create-user --user-name "${IAM_USER_NAME}"
-```
 
-#### Create Restrictive IAM Policy
-
-```bash
 POLICY_NAME="${IAM_USER_NAME}-bucket-access-policy"
 echo "Creating IAM Policy: ${POLICY_NAME}"
+
 aws iam create-policy \
     --policy-name "${POLICY_NAME}" \
     --policy-document '{
@@ -84,15 +79,19 @@ aws iam attach-user-policy \
 CREDENTIALS=$(aws iam create-access-key --user-name "${IAM_USER_NAME}")
 ```
 
-#### Print Credentials and Information
-
+#### Print Helm Values
 ```bash
+
 echo "------ SUCCESS ------"
 
-echo "Bucket Name: ${BUCKET_NAME}"
-echo "IAM User: ${IAM_USER_NAME}"
-echo "AWS Region: ${AWS_REGION}"
-echo "AWS Account ID: ${AWS_ACCOUNT_ID}"
-echo "Access Key ID: $(echo "${CREDENTIALS}" | jq -r '.AccessKey.AccessKeyId')"
-echo "Secret Access Key: $(echo "${CREDENTIALS}" | jq -r '.AccessKey.SecretAccessKey')"
+echo "Helm values.yaml:"
+echo ""
+echo "secretEnvVars:"
+echo "  AWS_ACCESS_KEY_ID: '$(echo "${CREDENTIALS}" | jq -r '.AccessKey.AccessKeyId')'"
+echo "  AWS_SECRET_ACCESS_KEY: '$(echo "${CREDENTIALS}" | jq -r '.AccessKey.SecretAccessKey')'"
+echo "  AWS_DEFAULT_REGION: ${AWS_REGION}"
+echo "  S3_BUCKET_NAME: ${BUCKET_NAME}"
+echo "  S3_UPLOAD_PREFIX: my-argo-instance/"
+echo "  ARGOCD_SERVER: argocd-server.argocd"
+echo "  ARGOCD_ADMIN_PASSWORD: ''"
 ```
