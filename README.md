@@ -28,7 +28,7 @@ Get the default `values.yaml` in order to edit.
 helm show values argocd-backup-s3/argocd-backup-s3 > my-argocd-backup-s3.values.yaml
 ```
 
-#### [Helm Values Dependencies](Dependencies.README.md)
+### [Helm Values Dependencies](Dependencies.README.md)
 
 #### ArgoCD CLI Access for export
 
