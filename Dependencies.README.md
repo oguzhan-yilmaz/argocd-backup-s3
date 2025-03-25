@@ -1,6 +1,18 @@
 # Dependencies Script
 
-## Bash
+## ArgoCD CLI Access
+
+```bash
+ARGOCD_NAMESPACE=$(kubectl get namespaces --no-headers -o custom-columns=":metadata.name" | grep -E "argocd|argo-cd|openshift-gitops")
+echo $ARGOCD_NAMESPACE
+
+# TODO: argocd server address
+# TODO:     argocd admin pass opt. 1: static
+# TODO:     argocd admin pass opt. 2: secret ref
+
+```
+
+## AWS S3 Bucket and Access Credentials
 
 #### Set default PREFIX if not provided
 
