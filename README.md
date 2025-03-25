@@ -21,22 +21,33 @@ helm repo add argocd-backup-s3 https://oguzhan-yilmaz.github.io/argocd-backup-s3
 helm repo update argocd-backup-s3
 ```
 
-### Helm Repository
+### Helm Values
+
+Get the default `values.yaml` in order to edit.
 
 ```bash
 helm show values argocd-backup-s3/argocd-backup-s3 > my-argocd-backup-s3.values.yaml
 ```
 
-### Helm Values
-
 #### [Helm Values Dependencies](Dependencies.README.md)
 
 ##### ArgoCD CLI Access for export
+
+This job makes use of `argocd admin export` command to create a yaml file export.
+
+So, we need to provide the ArgoCD admin account access.
+
 Follow the documentation: [ArgoCD Server Addr. and admin pass](Dependencies.README.md#argocd-cli-access)
 
 ##### AWS S3 Bucket and IAM User Access Keys
 
-Follow the documentation: [Bash script for creating S3 Bucket and IAM User Access Keys](Dependencies.README.md#aws-s3-bucket-and-access-credentials)
+Follow the bash script to:
+
+- creates S3 Bucket
+- creates IAM User (access only to S3 Bucket)
+- creates IAM User Access Keys 
+
+[Bash script for creating S3 Bucket and IAM User Access Keys](Dependencies.README.md#aws-s3-bucket-and-access-credentials)
 
 
 
