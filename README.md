@@ -13,7 +13,6 @@ kubectl create job -n argocd --from=cronjob/backup-job manual-backup-1
 
 ## Install with Helm
 
-### Helm Repository
 
 ```bash
 helm repo add argocd-backup-s3 https://oguzhan-yilmaz.github.io/argocd-backup-s3/
@@ -31,7 +30,7 @@ helm show values argocd-backup-s3/argocd-backup-s3 > my-argocd-backup-s3.values.
 
 #### [Helm Values Dependencies](Dependencies.README.md)
 
-##### ArgoCD CLI Access for export
+#### ArgoCD CLI Access for export
 
 This job makes use of `argocd admin export` command to create a yaml file export.
 
@@ -39,7 +38,7 @@ So, we need to provide the ArgoCD admin account access.
 
 Follow the documentation: [ArgoCD Server Addr. and admin pass](Dependencies.README.md#argocd-cli-access)
 
-##### AWS S3 Bucket and IAM User Access Keys
+#### AWS S3 Bucket and IAM User Access Keys
 
 Follow the bash script to:
 
