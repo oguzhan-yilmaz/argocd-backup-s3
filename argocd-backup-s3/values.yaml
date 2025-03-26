@@ -6,10 +6,10 @@ schedule: "00 20 * * *"
 secretEnvVars:
   AWS_ACCESS_KEY_ID: ""
   AWS_SECRET_ACCESS_KEY: ""
-  AWS_DEFAULT_REGION: ""
-  S3_UPLOAD_PREFIX: ""
+  AWS_DEFAULT_REGION: "eu-west-1"
   S3_BUCKET_NAME: ""
-  ARGOCD_SERVER: ""
+  S3_UPLOAD_PREFIX: "my-argocd-backups/dev/"
+  ARGOCD_SERVER: "argocd.argocd"
   ARGOCD_ADMIN_PASSWORD: ""
 
 

@@ -4,7 +4,7 @@
 
 ```bash
 ARGOCD_NAMESPACE=$(kubectl get namespaces --no-headers -o custom-columns=":metadata.name" | grep -E "argocd|argo-cd|openshift-gitops")
-echo $ARGOCD_NAMESPACE
+echo "ARGOCD_NAMESPACE = ${ARGOCD_NAMESPACE:-'Failed to find the ArgoCD, set it by hand'}"
 
 # TODO: argocd server address
 # TODO:     argocd admin pass opt. 1: static
