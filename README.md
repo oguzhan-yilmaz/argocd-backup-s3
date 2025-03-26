@@ -55,13 +55,27 @@ secretEnvVars:
   ARGOCD_ADMIN_PASSWORD: ""
 ```
 
+### Helm Install w/ custom `values.yaml`
+
+```bash
+helm upgrade --install \
+  -n argocd \
+  -f my-argocd-backup-s3.values.yaml \
+  argocd-backup-s3 argocd-backup-s3/argocd-backup-s3
+```
+
+
 ## Install with ArgoCD
 
 
 You can use the `argocd-application.yaml` manifest in the Github repo: <https://github.com/oguzhan-yilmaz/argocd-backup-s3/blob/main/argocd-application.yaml>
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/oguzhan-yilmaz/argocd-backup-s3/refs/heads/main/argocd-application.yaml
+curl -sL https://raw.githubusercontent.com/oguzhan-yilmaz/argocd-backup-s3/refs/heads/main/argocd-application.yaml -o argocd-backup-s3.argoapp.yaml
+
+# Edit the .valuesObject 
+
+kubectl apply -f argocd-backup-s3.argoapp.yaml
 ```
 
 
