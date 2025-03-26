@@ -58,7 +58,9 @@ spec:
                   export FILENAME="argocd-export-$(date +"%Y-%m-%d--%H-%M").yaml"
                   
                   # ----------- ARGOCD EXPORT -----------
+                  echo "Running the 'argocd admin export' command"
                   argocd admin export > "$FILENAME"
+                  file "$FILENAME"
                   echo "Export yaml file line count: $(wc -l $FILENAME)"
                   
                   # ----------- S3 UPLOAD -----------
