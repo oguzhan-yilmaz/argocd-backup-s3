@@ -4,18 +4,24 @@
 [![Build and publish Docker image to ghcr.io](https://github.com/oguzhan-yilmaz/argocd-backup-s3/actions/workflows/docker-build-and-push.yaml/badge.svg)](https://github.com/oguzhan-yilmaz/argocd-backup-s3/actions/workflows/docker-build-and-push.yaml)
 [![Helm package and push to Github Pages](https://github.com/oguzhan-yilmaz/argocd-backup-s3/actions/workflows/helm-package-and-publish.yaml/badge.svg)](https://github.com/oguzhan-yilmaz/argocd-backup-s3/actions/workflows/helm-package-and-publish.yaml)
 
+## About 
 
-[ghcr.io - Docker Image](https://github.com/oguzhan-yilmaz/argocd-backup-s3/pkgs/container/argocd-backup-s3)
+Helm package to deploy a Kubernetes CronJob to backup ArgoCD with 'argocd admin export' cmd and upload to S3 compatible storage.
+
+Deploy with the  `helm` package or the ArgoCD Application manifest.
 
 
-```bash
-manual trigger
-kubectl create job -n argocd --from=cronjob/backup-job manual-backup-1
-```
+### Links
+
+- 🐋 [ghcr.io - Docker Image](https://github.com/oguzhan-yilmaz/argocd-backup-s3/pkgs/container/argocd-backup-s3)
+- 🔰 [artifacthub.io - Helm Package](https://artifacthub.io/packages/helm/argocd-backup-s3/argocd-backup-s3)
+- 📜 [oguzhan-yilmaz.github.io - Helm Index](https://oguzhan-yilmaz.github.io/argocd-backup-s3/)
 
 
 ## Install with Helm
 
+
+### Get the Helm repo
 
 ```bash
 helm repo add argocd-backup-s3 https://oguzhan-yilmaz.github.io/argocd-backup-s3/
@@ -27,21 +33,24 @@ helm repo update argocd-backup-s3
 
 Get the default `values.yaml` in order to edit.
 
-b```bash
+```bash
 helm show values argocd-backup-s3/argocd-backup-s3 > my-argocd-backup-s3.values.yaml
 ```
 
 You need to fill out the following variables:
 
 ```yaml
+timeZone: 'Asia/Istanbul'
+schedule: "00 20 * * *"
+
 secretEnvVars:
   AWS_ACCESS_KEY_ID: ""
   AWS_SECRET_ACCESS_KEY: ""
   AWS_DEFAULT_REGION: ""
-  ARGOCD_SERVER: ""
-  ARGOCD_ADMIN_PASSWORD: ""
   S3_UPLOAD_PREFIX: ""
   S3_BUCKET_NAME: ""
+  ARGOCD_SERVER: ""
+  ARGOCD_ADMIN_PASSWORD: ""
 ```
 
 ### [Helm Values Dependencies](Dependencies.README.md)
