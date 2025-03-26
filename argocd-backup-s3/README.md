@@ -16,9 +16,9 @@ Helm package to deploy a
 ### Links
 
 - 🐋 [ghcr.io - Docker Image](https://github.com/oguzhan-yilmaz/argocd-backup-s3/pkgs/container/argocd-backup-s3)
-- 🔰 [artifacthub.io - Helm Package](https://artifacthub.io/packages/helm/argocd-backup-s3/argocd-backup-s3)
-- 📜 [oguzhan-yilmaz.github.io - Helm Index](https://oguzhan-yilmaz.github.io/argocd-backup-s3/)
-- 📜 [Github Releases](https://github.com/oguzhan-yilmaz/argocd-backup-s3/releases)
+- 📜 [artifacthub.io - Helm Package](https://artifacthub.io/packages/helm/argocd-backup-s3/argocd-backup-s3)
+- 🔰 [oguzhan-yilmaz.github.io - Helm Index](https://oguzhan-yilmaz.github.io/argocd-backup-s3/)
+- 📝 [Github Releases](https://github.com/oguzhan-yilmaz/argocd-backup-s3/releases)
 
 
 ## Install with Helm
