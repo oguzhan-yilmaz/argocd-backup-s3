@@ -68,8 +68,7 @@ helm upgrade --install \
 
 ## Install with ArgoCD
 
-
-You can use the `argocd-application.yaml` manifest in the Github repo: <https://github.com/oguzhan-yilmaz/argocd-backup-s3/blob/main/argocd-application.yaml>
+You can use the [`argocd-application.yaml` manifest](https://github.com/oguzhan-yilmaz/argocd-backup-s3/blob/main/argocd-application.yaml)
 
 ```bash
 curl -sL https://raw.githubusercontent.com/oguzhan-yilmaz/argocd-backup-s3/refs/heads/main/argocd-application.yaml -o argocd-backup-s3.argoapp.yaml
