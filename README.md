@@ -42,7 +42,7 @@ helm show values argocd-backup-s3/argocd-backup-s3 > my-argocd-backup-s3.values.
 You need to fill out the following variables:
 
 ```yaml
-timeZone: 'Asia/Istanbul'
+timeZone: 'Asia/Istanbul'  # optional
 schedule: "00 20 * * *"
 
 secretEnvVars:
@@ -65,7 +65,7 @@ kubectl apply -f https://raw.githubusercontent.com/oguzhan-yilmaz/argocd-backup-
 ```
 
 
-## AWS S3 Bucket and Access Credentials
+## Helm Values: AWS S3 Bucket and Access Credentials
 
 
 
@@ -165,7 +165,7 @@ echo "  ARGOCD_ADMIN_PASSWORD: ''"
 ```
 
 
-## ArgoCD CLI Access
+## Helm Values: ArgoCD Access
 
 ```bash
 ARGOCD_NAMESPACE=$(kubectl get namespaces --no-headers -o custom-columns=":metadata.name" | grep -E "argocd|argo-cd|openshift-gitops")
