@@ -6,9 +6,11 @@
 
 ## About 
 
-Helm package to deploy a Kubernetes CronJob to backup ArgoCD with 'argocd admin export' cmd and upload to S3 compatible storage.
+Helm package to deploy a 
 
-Deploy with the  `helm` package or the ArgoCD Application manifest.
+- Kubernetes CronJob to backup ArgoCD 
+- Upload to any S3 compatible storage
+- includes ArgoCD application manifest
 
 
 ### Links
@@ -53,7 +55,17 @@ secretEnvVars:
   ARGOCD_ADMIN_PASSWORD: ""
 ```
 
-### [Helm Values Dependencies](Dependencies.README.md)
+## Install with ArgoCD
+
+
+You can use the `argocd-application.yaml` manifest in the Github repo: <https://github.com/oguzhan-yilmaz/argocd-backup-s3/blob/main/argocd-application.yaml>
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/oguzhan-yilmaz/argocd-backup-s3/refs/heads/main/argocd-application.yaml
+```
+
+
+## [Helm Values Dependencies](Dependencies.README.md)
 
 #### ArgoCD CLI Access for export
 
@@ -76,24 +88,3 @@ Follow the bash script to:
 
 
 
-<!-- 
-```bash
-git clone ..
-cd abcdefg
-
-
-# vim values.yaml
-
-helm install -n argocd \
-    argocd-backup-s3 ./argocd-backup-s3
-```
- -->
-
-## Install with ArgoCD
-
-
-You can use the `argocd-application.yaml` manifest in the Github repo: <https://github.com/oguzhan-yilmaz/argocd-backup-s3/blob/main/argocd-application.yaml>
-
-```bash
-kubectl apply -f https://raw.githubusercontent.com/oguzhan-yilmaz/argocd-backup-s3/refs/heads/main/argocd-application.yaml
-```
