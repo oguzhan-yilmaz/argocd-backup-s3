@@ -73,7 +73,8 @@ You can use the `argocd-application.yaml` manifest in the Github repo: <https://
 ```bash
 curl -sL https://raw.githubusercontent.com/oguzhan-yilmaz/argocd-backup-s3/refs/heads/main/argocd-application.yaml -o argocd-backup-s3.argoapp.yaml
 
-# Edit the .valuesObject 
+# Edit the .valuesObject
+vim argocd-backup-s3.argoapp.yaml
 
 kubectl apply -f argocd-backup-s3.argoapp.yaml
 ```
