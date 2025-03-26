@@ -17,8 +17,40 @@ spec:
       # -----------------------------------------------
       valuesObject:
         todo: "TODO! HERE"
-        
 
+        # comment out the timeZone if you want to keep things default
+        timeZone: 'Asia/Istanbul'
+        schedule: "00 20 * * *"
+
+        secretEnvVars:
+          AWS_ACCESS_KEY_ID: ""
+          AWS_SECRET_ACCESS_KEY: ""
+          AWS_DEFAULT_REGION: "eu-west-1"
+          S3_BUCKET_NAME: ""
+          S3_UPLOAD_PREFIX: "my-argocd-backups/dev/"
+          ARGOCD_SERVER: "argocd.argocd"
+          ARGOCD_ADMIN_PASSWORD: ""
+
+        envVarSecretReferences: []
+        # envVarSecretReferences:
+        #   # remove the .secretEnvVars.ARGOCD_ADMIN_PASSWORD if you use this
+        #   - name: ARGOCD_ADMIN_PASSWORD
+        #     valueFrom:
+        #       secretKeyRef:
+        #         name: argocd-initial-admin-secret
+        #         key: password
+
+        resources:
+          limits:
+            memory: "256Mi"
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+
+        image:
+          repository: "ghcr.io/oguzhan-yilmaz/argocd-backup-s3"
+          tag: "latest"
+          pullPolicy: Always
         
       # -----------------------------------------------
 
