@@ -36,7 +36,7 @@ jobs:
           helm lint argocd-backup-s3
 
           # package the helm chart
-          PACKAGE_OUTPUT=$(helm package --version "$CLEAN_VERSION" argocd-backup-s3)
+          PACKAGE_OUTPUT=$(helm package --version "$CLEAN_VERSION" --app-version "$CLEAN_VERSION" argocd-backup-s3)
           echo "PACKAGE_OUTPUT=$PACKAGE_OUTPUT"
           PACKAGE_NAME=$(basename "$PACKAGE_OUTPUT")
           echo "Generated helm package: $PACKAGE_NAME"
