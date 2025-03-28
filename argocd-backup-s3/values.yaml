@@ -16,13 +16,22 @@ secretEnvVars:
 
   
 envVarSecretReferences: []
-# envVarSecretReferences:
-#   # remove the .secretEnvVars.ARGOCD_ADMIN_PASSWORD if you use this
-#   - name: ARGOCD_ADMIN_PASSWORD
-#     valueFrom:
-#       secretKeyRef:
-#         name: argocd-initial-admin-secret
-#         key: password
+#  - name: ARGOCD_ADMIN_PASSWORD
+#  # remove the .secretEnvVars.ARGOCD_ADMIN_PASSWORD if you use this
+#    valueFrom:
+#      secretKeyRef:
+#        name: argocd-initial-admin-secret
+#        key: password
+
+extraObjects: []
+#  - apiVersion: v1
+#    kind: Secret
+#    metadata:
+#      name: extra-secret
+#    type: Opaque
+#    stringData:
+#      AAA: BBB
+
 
 resources:
   limits:

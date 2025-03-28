@@ -1,0 +1,6 @@
+{{- if (.Values.extraObjects) -}}
+{{ range $genObj := .Values.extraObjects -}}
+---
+{{ toYaml $genObj }}
+{{ end }} {{/* end of range loop */}}
+{{- end }} {{/* end of if extraObjects */}}

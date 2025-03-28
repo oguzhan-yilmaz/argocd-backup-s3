@@ -33,25 +33,22 @@ spec:
           AWS_S3_ENDPOINT: 'https://s3.amazonaws.com'
 
         envVarSecretReferences: []
-        # envVarSecretReferences:
-        #   # remove the .secretEnvVars.ARGOCD_ADMIN_PASSWORD if you use this
-        #   - name: ARGOCD_ADMIN_PASSWORD
-        #     valueFrom:
-        #       secretKeyRef:
-        #         name: argocd-initial-admin-secret
-        #         key: password
+        #  - name: ARGOCD_ADMIN_PASSWORD
+        #  # remove the .secretEnvVars.ARGOCD_ADMIN_PASSWORD if you use this
+        #    valueFrom:
+        #      secretKeyRef:
+        #        name: argocd-initial-admin-secret
+        #        key: password
 
-        resources:
-          limits:
-            memory: "256Mi"
-          requests:
-            cpu: "250m"
-            memory: "256Mi"
+        extraObjects: []
+        #  - apiVersion: v1
+        #    kind: Secret
+        #    metadata:
+        #      name: extra-secret
+        #    type: Opaque
+        #    stringData:
+        #      AAA: BBB
 
-        image:
-          repository: "ghcr.io/oguzhan-yilmaz/argocd-backup-s3"
-          tag: "latest"
-          pullPolicy: Always
         
       # -----------------------------------------------
 
