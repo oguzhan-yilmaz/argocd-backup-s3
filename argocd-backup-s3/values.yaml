@@ -1,5 +1,7 @@
 # comment out the timeZone if you want to keep things default
+
 timeZone: 'Asia/Istanbul'
+# https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
 schedule: "00 20 * * *"
 
 
