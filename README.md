@@ -10,7 +10,7 @@ Helm package to deploy a
 
 - Kubernetes CronJob to backup ArgoCD w/ `argocd admin export`
 - Upload to any S3 compatible storage
-- includes ArgoCD application manifest
+- Deploy with Helm chart or ArgoCD application manifest
 
 
 ### Links
