@@ -177,6 +177,7 @@ echo "  S3_BUCKET_NAME: ${BUCKET_NAME}"
 echo "  S3_UPLOAD_PREFIX: my-argo-instance/"
 echo "  ARGOCD_SERVER: argocd-server.argocd"
 echo "  ARGOCD_ADMIN_PASSWORD: ''"
+echo "  AWS_S3_ENDPOINT: 'https://s3.amazonaws.com'"
 ```
 
 
