@@ -6,7 +6,7 @@
 
 ## About 
 
-Helm package to deploy a 
+Backup your ArgoCD Instance — the easy way:
 
 - Kubernetes CronJob to backup ArgoCD w/ `argocd admin export`
 - Upload to any S3 compatible storage
