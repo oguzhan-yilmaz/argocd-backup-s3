@@ -57,7 +57,7 @@ spec:
   # Destination cluster and namespace to deploy the application
   destination:
     name: in-cluster
-    namespace: monitoring
+    namespace: argocd
     # namespace: monitoring
 
   # Extra information to show in the Argo CD Application details tab
