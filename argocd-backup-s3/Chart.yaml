@@ -1,6 +1,6 @@
 apiVersion: v2
 name: argocd-backup-s3
-description: "Kubernetes CronJob to backup ArgoCD with 'argocd admin export' cmd and uploads to S3 compatible storage"
+description: "Kubernetes CronJob to backup ArgoCD with 'argocd admin export' cmd and upload to S3 compatible storage"
 type: application
 version: 0.1.0
 appVersion: "1.16.0"
