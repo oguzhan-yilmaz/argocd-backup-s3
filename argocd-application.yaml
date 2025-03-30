@@ -7,21 +7,20 @@ spec:
   project: default
   source:
     repoURL: https://oguzhan-yilmaz.github.io/argocd-backup-s3/
-    targetRevision: '*.*.*' 
+    targetRevision: '*.*.*'  # latest version
 
     chart: argocd-backup-s3
     helm:
       releaseName: argocd-backup-s3
 
-      # Values file as block file. This takes precedence over values
-      # -----------------------------------------------
+      # Values file as block file. This takes precedence over values.yaml in the chart
+      # ------------------- valuesObject -------------------
       valuesObject:
-        todo: "TODO! HERE"
-
         # comment out the timeZone if you want to keep things default
-        timeZone: 'Asia/Istanbul'  # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
         # https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
-        schedule: "00 20 * * *"  # https://crontab.guru/#00_20_*_*_* 
+        timeZone: 'Asia/Istanbul'  # optional -- https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+        schedule: "00 20 * * *"    # https://crontab.guru/#00_20_*_*_*
+
         secretEnvVars:
           AWS_ACCESS_KEY_ID: ""
           AWS_SECRET_ACCESS_KEY: ""
@@ -30,7 +29,7 @@ spec:
           S3_UPLOAD_PREFIX: "my-argocd-backups/dev/"
           ARGOCD_SERVER: "argocd.argocd"
           ARGOCD_ADMIN_PASSWORD: ""
-          AWS_S3_ENDPOINT: 'https://s3.amazonaws.com'
+          # AWS_S3_ENDPOINT: 'https://s3.amazonaws.com'
 
         envVarSecretReferences: []
         #  - name: ARGOCD_ADMIN_PASSWORD
@@ -49,8 +48,19 @@ spec:
         #    stringData:
         #      AAA: BBB
 
+        resources:
+          limits:
+            memory: "256Mi"
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+
+        image:
+          repository: "ghcr.io/oguzhan-yilmaz/argocd-backup-s3"
+          tag: "latest"
+          pullPolicy: Always
         
-      # -----------------------------------------------
+      # ------------------- /valuesObject -------------------
 
   # Destination cluster and namespace to deploy the application
   destination:
