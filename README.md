@@ -41,7 +41,7 @@ helm show values argocd-backup-s3/argocd-backup-s3 > my-argocd-backup-s3.values.
 
 3. Configure the required values in `my-argocd-backup-s3.values.yaml`:
 ```yaml
-timeZone: 'Asia/Istanbul'  # optional
+timeZone: 'Asia/Istanbul'  # optional -- https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 schedule: "00 20 * * *"    # https://crontab.guru/#00_20_*_*_*
 
 secretEnvVars:
@@ -164,7 +164,7 @@ echo "  AWS_S3_ENDPOINT: 'https://s3.amazonaws.com'"
 
 ### Optional Configuration
 
-- `timeZone`: Timezone for the CronJob (default: UTC)
+- `timeZone`: Timezone for the CronJob (default: UTC)  <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>
 - `schedule`: Cron schedule for backups (default: "00 20 * * *")
 - `AWS_S3_ENDPOINT`: Custom S3 endpoint for non-AWS S3 storage
 

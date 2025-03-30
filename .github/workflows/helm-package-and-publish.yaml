@@ -117,7 +117,7 @@ jobs:
             3. Configure the required values in `my-argocd-backup-s3.values.yaml`
 
             ```yaml
-            timeZone: 'Asia/Istanbul'  # optional
+            timeZone: 'Asia/Istanbul'  # optional -- https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
             schedule: "00 20 * * *"    # https://crontab.guru/#00_20_*_*_* 
 
             secretEnvVars:

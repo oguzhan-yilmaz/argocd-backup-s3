@@ -19,7 +19,7 @@ spec:
         todo: "TODO! HERE"
 
         # comment out the timeZone if you want to keep things default
-        timeZone: 'Asia/Istanbul'
+        timeZone: 'Asia/Istanbul'  # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
         # https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
         schedule: "00 20 * * *"  # https://crontab.guru/#00_20_*_*_* 
         secretEnvVars:
