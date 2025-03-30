@@ -42,7 +42,7 @@ helm show values argocd-backup-s3/argocd-backup-s3 > my-argocd-backup-s3.values.
 3. Configure the required values in `my-argocd-backup-s3.values.yaml`:
 ```yaml
 timeZone: 'Asia/Istanbul'  # optional
-schedule: "00 20 * * *"   # cron schedule
+schedule: "00 20 * * *"    # https://crontab.guru/#00_20_*_*_* 
 
 secretEnvVars:
   AWS_ACCESS_KEY_ID: ""

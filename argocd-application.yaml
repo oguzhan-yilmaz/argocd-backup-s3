@@ -21,8 +21,7 @@ spec:
         # comment out the timeZone if you want to keep things default
         timeZone: 'Asia/Istanbul'
         # https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
-        schedule: "00 20 * * *"
-
+        schedule: "00 20 * * *"  # https://crontab.guru/#00_20_*_*_* 
         secretEnvVars:
           AWS_ACCESS_KEY_ID: ""
           AWS_SECRET_ACCESS_KEY: ""
