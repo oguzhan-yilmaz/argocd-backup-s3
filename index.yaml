@@ -2,6 +2,17 @@ apiVersion: v1
 entries:
   argocd-backup-s3:
   - apiVersion: v2
+    appVersion: 0.5.1
+    created: "2025-03-30T21:26:43.218786744Z"
+    description: Kubernetes CronJob to backup ArgoCD with 'argocd admin export' cmd
+      and upload to S3 compatible storage
+    digest: e76f2647ccb53ee0c2dbb7b72df9a62cfde831923fa5bb5a9838965aa83f79fa
+    name: argocd-backup-s3
+    type: application
+    urls:
+    - https://github.com/oguzhan-yilmaz/argocd-backup-s3/releases/download/v0.5.1/argocd-backup-s3-0.5.1.tgz
+    version: 0.5.1
+  - apiVersion: v2
     appVersion: 0.5.0
     created: "2025-03-30T21:25:23.31291282Z"
     description: Kubernetes CronJob to backup ArgoCD with 'argocd admin export' cmd
@@ -256,4 +267,4 @@ entries:
     urls:
     - https://github.com/oguzhan-yilmaz/argocd-backup-s3/releases/download/v0.1.3/argocd-backup-s3-0.1.3.tgz
     version: 0.1.3
-generated: "2025-03-30T21:25:23.312469141Z"
+generated: "2025-03-30T21:26:43.218310576Z"
