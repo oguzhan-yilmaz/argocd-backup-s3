@@ -4,26 +4,28 @@ metadata:
   name: argocd-backup-s3
 rules:
   - apiGroups:
-      - '*'
+      - argoproj.io
     resources:
-      - '*'
+      - applications
+      - applicationsets
+      - clusters
+      - repositories
+      - appprojects
+      - projects
     verbs:
-      - get     # supports viewing live object manifest in UI
-      - patch   # supports `argocd app patch`
+      - get
+      - list
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+      - configmaps
+    verbs:
+      - get
+      - list
   - apiGroups:
       - ""
     resources:
       - events
     verbs:
       - list
-      - create
-  - apiGroups:
-      - argoproj.io
-    resources:
-      - applications
-      - applicationsets
-    verbs:
-      - get
-      - list
-      - update
-      - watch
