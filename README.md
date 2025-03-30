@@ -15,13 +15,6 @@
 - ⏰ Configurable backup schedule and timezone
 - 🔍 Detailed logging and error reporting
 
-## Prerequisites
-
-- Kubernetes cluster with ArgoCD installed
-- Access to an S3-compatible storage service
-- `kubectl` and `helm` installed (for manual installation)
-- AWS CLI (for setting up S3 bucket and IAM user)
-
 ## Quick Links
 
 - 🐋 [Docker Image](https://github.com/oguzhan-yilmaz/argocd-backup-s3/pkgs/container/argocd-backup-s3)
