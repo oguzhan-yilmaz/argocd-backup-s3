@@ -82,6 +82,8 @@ curl -sL https://raw.githubusercontent.com/oguzhan-yilmaz/argocd-backup-s3/refs/
 kubectl apply -f argocd-backup-s3.argoapp.yaml
 ```
 
+---
+
 ## AWS S3 Setup
 
 The following script helps you set up the required AWS resources (S3 bucket and IAM user) for the backup solution:
