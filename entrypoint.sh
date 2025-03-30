@@ -6,14 +6,17 @@ for var in ARGOCD_SERVER ARGOCD_ADMIN_PASSWORD S3_BUCKET_NAME S3_UPLOAD_PREFIX; 
     exit 1
     fi
 done
+echo "------------*------------*------------"
 
 # ----------- AWS CLI CHECKS -----------
+echo "CHECK: Do we have AWS S3 access to the $S3_BUCKET_NAME  bucket?"
 aws s3api head-bucket --bucket "$S3_BUCKET_NAME" || {
     echo "ERROR: Bucket access failed, current AWS identity:"
     aws sts get-caller-identity
     echo "ERROR: Please fix AWS permissions or the region. Aborting..."
     exit 1
 } 
+echo "------------*------------*------------"
 
 # ----------- LOGIN TO ARGOCD -----------
 echo "Logging in to ArgoCD Server: ${ARGOCD_SERVER}"
@@ -21,20 +24,28 @@ argocd login "${ARGOCD_SERVER}" --username admin --password "${ARGOCD_ADMIN_PASS
     echo "ERROR: ArgoCD login failed. Make sure to use admin account password!"
     exit 1
 }
+
+echo "Logged in to ArgoCD Server, checking current context: ${ARGOCD_SERVER}"
 argocd context
 argocd account get-user-info
-export FILENAME="argocd-export-$(date +"%Y-%m-%d--%H-%M").yaml"
-
-# sleep infinity
+echo "------------*------------*------------"
 
 # ----------- ARGOCD EXPORT -----------
+
+echo "Setting the export filename to: ${FILENAME}"
+export FILENAME="argocd-export-$(date +"%Y-%m-%d--%H-%M").yaml"
+
 echo "Running the 'argocd admin export' command"
 argocd admin export > "$FILENAME"
-# file "$FILENAME"
+
 echo "Export yaml file line count: $(wc -l $FILENAME)"
+echo "------------*------------*------------"
 
 # ----------- S3 UPLOAD -----------
 echo "Uploading to  s3://${S3_BUCKET_NAME}/${S3_UPLOAD_PREFIX%/}/${FILENAME}"
 aws s3 cp ${FILENAME} s3://${S3_BUCKET_NAME}/${S3_UPLOAD_PREFIX%/}/${FILENAME}
+echo "------------*------------*------------"
+
 echo "Listing  s3://${S3_BUCKET_NAME}/${S3_UPLOAD_PREFIX}"
+echo "---"
 aws s3 ls s3://${S3_BUCKET_NAME}/${S3_UPLOAD_PREFIX}
