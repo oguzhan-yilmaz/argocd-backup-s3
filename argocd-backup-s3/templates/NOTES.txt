@@ -1,1 +1,15 @@
-kubectl create job -n argocd --from=cronjob/backup-job manual-backup-1
+Thank you for installing {{ .Chart.Name }}!
+
+Your release is named {{ .Release.Name }}
+
+To manually trigger a backup, run:
+  kubectl create job -n {{ .Release.Namespace }} --from=cronjob/argocd-backup-s3 manual-argocd-s3-backup-$(date +%s)
+
+To verify the CronJob is scheduled:
+  kubectl get cronjob -n {{ .Release.Namespace }}
+
+To check the status of backups:
+  kubectl get jobs -n {{ .Release.Namespace }}
+
+For logs of the latest backup:
+  kubectl get pods -n {{ .Release.Namespace }} -l job-name=backup-job --sort-by=.metadata.creationTimestamp | tail -1 | awk '{print $1}' | xargs kubectl logs -n {{ .Release.Namespace }}
