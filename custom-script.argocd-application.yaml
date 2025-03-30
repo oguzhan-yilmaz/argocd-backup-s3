@@ -1,0 +1,133 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-backup-s3
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://oguzhan-yilmaz.github.io/argocd-backup-s3/
+    targetRevision: '*.*.*'  # latest version
+
+    chart: argocd-backup-s3
+    helm:
+      releaseName: argocd-backup-s3
+
+      # Values file as block file. This takes precedence over values.yaml in the chart
+      # ------------------- valuesObject -------------------
+      valuesObject:
+        # --- Custom Command  ---
+        custom_command:
+          - /bin/bash
+          - -c
+          - |
+            # ----------- ENV VAR CHECKS -----------
+            for var in ARGOCD_SERVER ARGOCD_ADMIN_PASSWORD S3_BUCKET_NAME S3_UPLOAD_PREFIX; do
+              if [ -z "${!var}" ]; then
+                echo "ERROR: Env Var '$var' is not set. Aborting."
+                exit 1
+              fi
+            done
+
+            # ----------- AWS CLI CHECKS -----------
+            aws s3api head-bucket --bucket "$S3_BUCKET_NAME" || {
+              echo "ERROR: Bucket access failed, current AWS identity:"
+              aws sts get-caller-identity
+              echo "ERROR: Please fix AWS permissions or the region. Aborting..."
+              exit 1
+            } 
+
+            # ----------- LOGIN TO ARGOCD -----------
+            echo "Logging in to ArgoCD Server: ${ARGOCD_SERVER}"
+            argocd login ${ARGOCD_SERVER} --username admin --password ${ARGOCD_ADMIN_PASSWORD} --plaintext || {
+              echo "ERROR: ArgoCD login failed. Make sure to use admin account password!"
+              exit 1
+            }
+            argocd context
+            argocd account get-user-info
+            export FILENAME="argocd-export-$(date +"%Y-%m-%d--%H-%M").yaml"
+
+            # sleep infinity
+            
+            # ----------- ARGOCD EXPORT -----------
+            echo "Running the 'argocd admin export' command"
+            argocd admin export > "$FILENAME"
+            # file "$FILENAME"
+            echo "Export yaml file line count: $(wc -l $FILENAME)"
+            
+            # ----------- S3 UPLOAD -----------
+            echo "Uploading to  s3://${S3_BUCKET_NAME}/${S3_UPLOAD_PREFIX%/}/${FILENAME}"
+            aws s3 cp ${FILENAME} s3://${S3_BUCKET_NAME}/${S3_UPLOAD_PREFIX%/}/${FILENAME}
+            echo "Listing  s3://${S3_BUCKET_NAME}/${S3_UPLOAD_PREFIX}"
+            aws s3 ls s3://${S3_BUCKET_NAME}/${S3_UPLOAD_PREFIX}
+
+        # comment out the timeZone if you want to keep things default
+        # https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
+        timeZone: 'Asia/Istanbul'  # optional -- https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+        schedule: "00 20 * * *"    # https://crontab.guru/#00_20_*_*_*
+
+        secretEnvVars:
+          AWS_ACCESS_KEY_ID: ""
+          AWS_SECRET_ACCESS_KEY: ""
+          AWS_DEFAULT_REGION: "eu-west-1"
+          S3_BUCKET_NAME: ""
+          S3_UPLOAD_PREFIX: "my-argocd-backups/dev/"
+          ARGOCD_SERVER: "argocd.argocd"
+          ARGOCD_ADMIN_PASSWORD: ""
+          # AWS_S3_ENDPOINT: 'https://s3.amazonaws.com'
+
+        envVarSecretReferences: []
+        #  - name: ARGOCD_ADMIN_PASSWORD
+        #  # remove the .secretEnvVars.ARGOCD_ADMIN_PASSWORD if you use this
+        #    valueFrom:
+        #      secretKeyRef:
+        #        name: argocd-initial-admin-secret
+        #        key: password
+
+        extraObjects: []
+        #  - apiVersion: v1
+        #    kind: Secret
+        #    metadata:
+        #      name: extra-secret
+        #    type: Opaque
+        #    stringData:
+        #      AAA: BBB
+
+        resources:
+          limits:
+            memory: "256Mi"
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+
+        image:
+          repository: "ghcr.io/oguzhan-yilmaz/argocd-backup-s3"
+          tag: "latest"
+          pullPolicy: Always
+        
+      # ------------------- /valuesObject -------------------
+
+  # Destination cluster and namespace to deploy the application
+  destination:
+    name: in-cluster
+    namespace: argocd
+    # namespace: monitoring
+
+  # Extra information to show in the Argo CD Application details tab
+  info:
+    - name: 'Github Repo'
+      value: 'https://github.com/oguzhan-yilmaz/argocd-backup-s3'
+
+  # Sync policy
+  syncPolicy:
+    automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
+      prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
+      selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
+    syncOptions:     # Sync options which modifies sync behavior
+    - Validate=false # disables resource validation (equivalent to 'kubectl apply --validate=false') ( true by default ).
+    - CreateNamespace=true # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
+    - PrunePropagationPolicy=foreground # Supported policies are background, foreground and orphan.
+    - PruneLast=true # Allow the ability for resource pruning to happen as a final, implicit wave of a sync operation
+    - ApplyOutOfSyncOnly=true # Only sync out-of-sync resources, rather than applying every object in the application
+
+  revisionHistoryLimit: 5
