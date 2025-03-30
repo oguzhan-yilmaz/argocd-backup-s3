@@ -4,6 +4,7 @@
 
 templates/debug*.yaml
 templates/debug*.yml
+custom-command.values.yaml
 
 .DS_Store
 # Common VCS dirs
