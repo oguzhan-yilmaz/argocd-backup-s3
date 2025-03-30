@@ -1,5 +1,6 @@
 FROM amazon/aws-cli:latest as awscli
 FROM argoproj/argocd:latest as argocd
+FROM bitnami/kubectl:latest as kubectl
 
 
 FROM debian:bookworm-slim
@@ -25,6 +26,9 @@ RUN ln -s /usr/local/aws-cli/v2/current/bin/aws /usr/local/bin/aws
 
 # get the argocd cli from it's docker image
 COPY --from=argocd /usr/local/bin/argocd /usr/local/bin/argocd
+
+# get the kubectl from it's docker image
+COPY --from=kubectl /opt/bitnami/kubectl/bin/kubectl /usr/local/bin/kubectl
 
 WORKDIR /home/argocdbackup
 
