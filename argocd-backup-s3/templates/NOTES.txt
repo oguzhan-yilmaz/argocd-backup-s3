@@ -3,7 +3,7 @@ Thank you for installing {{ .Chart.Name }}!
 Your release is named {{ .Release.Name }}
 
 To manually trigger a backup, run:
-  kubectl create job -n {{ .Release.Namespace }} --from=cronjob/argocd-backup-s3 manual-argocd-s3-backup-$(date +%s)
+  kubectl create job -n {{ .Release.Namespace }} --from=cronjob/argocd-backup-s3 manual-argocd-backup-s3-$(date +%s)
 
 To verify the CronJob is scheduled:
   kubectl get cronjob -n {{ .Release.Namespace }}
