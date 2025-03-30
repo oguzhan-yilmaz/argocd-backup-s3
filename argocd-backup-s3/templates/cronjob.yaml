@@ -18,8 +18,8 @@ spec:
           serviceAccount: argocd-backup-s3
           containers:
             - name: argocd-backup-s3
-              image: "{.Values.image.repository}:{.Values.image.tag}"
-              imagePullPolicy: {.Values.image.pullPolicy}
+              image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
+              imagePullPolicy: {{ .Values.image.pullPolicy }}
               envFrom:
               - secretRef:
                   name: argocd-backup-s3-secret-env-vars
@@ -56,11 +56,13 @@ spec:
                   argocd context
                   argocd account get-user-info
                   export FILENAME="argocd-export-$(date +"%Y-%m-%d--%H-%M").yaml"
+
+                  # sleep infinity
                   
                   # ----------- ARGOCD EXPORT -----------
                   echo "Running the 'argocd admin export' command"
                   argocd admin export > "$FILENAME"
-                  file "$FILENAME"
+                  # file "$FILENAME"
                   echo "Export yaml file line count: $(wc -l $FILENAME)"
                   
                   # ----------- S3 UPLOAD -----------
