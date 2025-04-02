@@ -46,3 +46,7 @@ image:
   repository: "ghcr.io/oguzhan-yilmaz/argocd-backup-s3"
   tag: "latest"
   pullPolicy: Always
+
+serviceAccount:
+  irsaEnabled: true
+  irsaRoleArn: "arn:aws:iam::123456789012:role/argocd-backup-role"

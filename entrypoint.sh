@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+set -o pipefail
 # ----------- ENV VAR CHECKS -----------
 for var in ARGOCD_SERVER ARGOCD_ADMIN_PASSWORD S3_BUCKET_NAME S3_UPLOAD_PREFIX; do
     if [ -z "${!var}" ]; then
@@ -7,7 +9,6 @@ for var in ARGOCD_SERVER ARGOCD_ADMIN_PASSWORD S3_BUCKET_NAME S3_UPLOAD_PREFIX; 
     fi
 done
 echo "------------*------------*------------"
-
 # ----------- AWS CLI CHECKS -----------
 echo "CHECK: Do we have AWS S3 access to the $S3_BUCKET_NAME  bucket?"
 aws s3api head-bucket --bucket "$S3_BUCKET_NAME" || {
@@ -20,7 +21,12 @@ echo "------------*------------*------------"
 
 # ----------- LOGIN TO ARGOCD -----------
 echo "Logging in to ArgoCD Server: ${ARGOCD_SERVER}"
-argocd login "${ARGOCD_SERVER}" --username admin --password "${ARGOCD_ADMIN_PASSWORD}" --plaintext || {
+if [ -z "${ARGOCD_ADMIN_USERNAME}" ];then
+  echo "WARNING: ARGOCD_ADMIN_USERNAME is empty; continue with default one"
+  export ARGOCD_ADMIN_USERNAME="admin"
+fi
+
+argocd login "${ARGOCD_SERVER}" --username ${ARGOCD_ADMIN_USERNAME} --password "${ARGOCD_ADMIN_PASSWORD}" --plaintext || {
     echo "ERROR: ArgoCD login failed. Make sure to use admin account password!"
     exit 1
 }
