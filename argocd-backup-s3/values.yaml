@@ -48,5 +48,5 @@ image:
   pullPolicy: Always
 
 serviceAccount:
-  irsaEnabled: true
+  irsaEnabled: false
   irsaRoleArn: "arn:aws:iam::123456789012:role/argocd-backup-role"
