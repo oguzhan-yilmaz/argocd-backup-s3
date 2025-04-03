@@ -169,6 +169,10 @@ echo "  AWS_S3_ENDPOINT: 'https://s3.amazonaws.com'"
 - `AWS_S3_ENDPOINT`: Custom S3 endpoint for non-AWS S3 storage
 - `serviceAccount.irsaEnabled`: This value allows your pods to access AWS S3 API via IAM Role please check the <a href="https://aws.amazon.com/tr/blogs/opensource/introducing-fine-grained-iam-roles-service-accounts/">details</a>
 
+## Credits
+
+- [WoodProgrammer](https://github.com/WoodProgrammer): added Service Account EKS IRSA support 
+
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.

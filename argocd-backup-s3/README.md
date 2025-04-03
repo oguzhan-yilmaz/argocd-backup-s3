@@ -168,6 +168,10 @@ echo "  AWS_S3_ENDPOINT: 'https://s3.amazonaws.com'"
 - `schedule`: Cron schedule for backups (default: "00 20 * * *")
 - `AWS_S3_ENDPOINT`: Custom S3 endpoint for non-AWS S3 storage
 
+## Credits
+
+- [WoodProgrammer](https://github.com/WoodProgrammer): added Service Account EKS IRSA support 
+
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
