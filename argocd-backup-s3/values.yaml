@@ -35,6 +35,11 @@ extraObjects: []
 #      AAA: BBB
 
 
+securityContext:
+  runAsNonRoot: true
+  runAsUser: "12345"
+  runAsGroup: "12345"
+  
 resources:
   limits:
     memory: "256Mi"

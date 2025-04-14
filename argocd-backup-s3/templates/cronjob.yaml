@@ -20,6 +20,7 @@ spec:
             - name: argocd-backup-s3
               image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
+              securityContext: {{ toYaml .Values.securityContext | nindent 16 }}
               envFrom:
               - secretRef:
                   name: argocd-backup-s3-secret-env-vars
@@ -35,7 +36,4 @@ spec:
               resources: {{- toYaml .Values.resources | nindent 16 }}
               {{- end }}
           restartPolicy: OnFailure
-          securityContext:
-            runAsNonRoot: true
-            runAsUser: 12345
-            runAsGroup: 12345
+
