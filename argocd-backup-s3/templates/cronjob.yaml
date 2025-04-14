@@ -21,9 +21,11 @@ spec:
               image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
               securityContext: {{ toYaml .Values.securityContext | nindent 16 }}
+              {{- if .Values.secretEnvVars }}
               envFrom:
               - secretRef:
                   name: argocd-backup-s3-secret-env-vars
+              {{- end }}
               {{- if .Values.envVarSecretReferences }}
               env:
                 {{- toYaml .Values.envVarSecretReferences | nindent 14 }}
