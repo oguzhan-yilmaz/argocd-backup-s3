@@ -20,7 +20,9 @@ spec:
             - name: argocd-backup-s3
               image: "{{.Values.image.repository}}:{{.Values.image.tag}}"
               imagePullPolicy: {{ .Values.image.pullPolicy }}
+              {{- if .Values.securityContext }}
               securityContext: {{ toYaml .Values.securityContext | nindent 16 }}
+              {{- end }}
               {{- if .Values.secretEnvVars }}
               envFrom:
               - secretRef:
