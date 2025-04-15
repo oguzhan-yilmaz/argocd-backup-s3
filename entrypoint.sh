@@ -32,8 +32,8 @@ argocd login "${ARGOCD_SERVER}" --username ${ARGOCD_ADMIN_USERNAME} --password "
 }
 
 echo "Logged in to ArgoCD Server, checking current context: ${ARGOCD_SERVER}"
-argocd context
-argocd account get-user-info
+argocd context "${ARGOCD_EXTRA_ARGS:-''}"
+argocd account get-user-info "${ARGOCD_EXTRA_ARGS:-''}"
 echo "------------*------------*------------"
 
 # ----------- ARGOCD EXPORT -----------
@@ -42,7 +42,7 @@ export FILENAME="argocd-export-$(date +"%Y-%m-%d--%H-%M").yaml"
 echo "Setting the export filename to: ${FILENAME}"
 
 echo "Running the 'argocd admin export' command"
-argocd admin export > "$FILENAME"
+argocd admin export "${ARGOCD_EXTRA_ARGS:-''}" > "$FILENAME"
 
 echo "Export yaml file line count: $(wc -l $FILENAME)"
 echo "------------*------------*------------"
