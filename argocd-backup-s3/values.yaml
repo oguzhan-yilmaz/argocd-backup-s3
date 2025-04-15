@@ -38,8 +38,8 @@ extraObjects: []
 
 securityContext:
   runAsNonRoot: true
-  runAsUser: 12345
-  runAsGroup: 12345
+  runAsUser: 1001070001
+  runAsGroup: 1001070001
   
 resources:
   limits:

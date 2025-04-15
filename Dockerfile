@@ -16,9 +16,9 @@ RUN apt-get update -y \
  && apt-get autoremove \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* \
- && groupadd -g 12345 argocdbackup \
- && useradd -m -u 12345 -g argocdbackup argocdbackup \
- && mkdir -p /argocdbackup/.config \
+ && groupadd -g 1001070001 argocdbackup \
+ && useradd -m -u 1001070001 -g argocdbackup argocdbackup \
+ && mkdir -p /argocdbackup/.config/argo \
  && chown -R argocdbackup:argocdbackup /argocdbackup
 
 WORKDIR /argocdbackup
