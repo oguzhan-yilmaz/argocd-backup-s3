@@ -42,7 +42,7 @@ export FILENAME="argocd-export-$(date +"%Y-%m-%d--%H-%M").yaml"
 echo "Setting the export filename to: ${FILENAME}"
 
 echo "Running the 'argocd admin export' command"
-argocd admin export "${ARGOCD_EXTRA_ARGS:-''}" > "$FILENAME"
+argocd admin export "${ARGOCD_EXPORT_EXTRA_ARGS:-''}" > "$FILENAME"
 
 echo "Export yaml file line count: $(wc -l $FILENAME)"
 echo "------------*------------*------------"
