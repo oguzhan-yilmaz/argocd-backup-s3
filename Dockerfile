@@ -18,6 +18,7 @@ RUN apt-get update -y \
     && groupadd -g 12345 argocdbackup \
     && useradd -m -u 12345 -g argocdbackup argocdbackup
 
+WORKDIR /home/argocdbackup
 
 # get the aws cli from it's docker image
 COPY --from=awscli /usr/local/aws-cli /usr/local/aws-cli
@@ -27,9 +28,8 @@ RUN ln -s /usr/local/aws-cli/v2/current/bin/aws /usr/local/bin/aws
 COPY --from=argocd /usr/local/bin/argocd /usr/local/bin/argocd
 
 
-WORKDIR /home/argocdbackup
-
 COPY entrypoint.sh .
-ENTRYPOINT [ "bash", "entrypoint.sh" ]
 
 USER argocdbackup
+ENTRYPOINT [ "bash", "entrypoint.sh" ]
+

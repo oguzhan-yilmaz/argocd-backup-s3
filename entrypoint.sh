@@ -22,7 +22,7 @@ echo "------------*------------*------------"
 # ----------- LOGIN TO ARGOCD -----------
 echo "Logging in to ArgoCD Server: ${ARGOCD_SERVER}"
 if [ -z "${ARGOCD_ADMIN_USERNAME}" ];then
-  echo "WARNING: ARGOCD_ADMIN_USERNAME is empty; continue with 'admin user'"
+  echo "WARNING: ARGOCD_ADMIN_USERNAME is empty; continue with 'admin' user"
   export ARGOCD_ADMIN_USERNAME="admin"
 fi
 
