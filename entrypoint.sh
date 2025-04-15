@@ -22,11 +22,11 @@ echo "------------*------------*------------"
 # ----------- LOGIN TO ARGOCD -----------
 echo "Logging in to ArgoCD Server: ${ARGOCD_SERVER}"
 if [ -z "${ARGOCD_ADMIN_USERNAME}" ];then
-  echo "WARNING: ARGOCD_ADMIN_USERNAME is empty; continue with default one"
+  echo "WARNING: ARGOCD_ADMIN_USERNAME is empty; continue with 'admin user'"
   export ARGOCD_ADMIN_USERNAME="admin"
 fi
 
-argocd login "${ARGOCD_SERVER}" --username ${ARGOCD_ADMIN_USERNAME} --password "${ARGOCD_ADMIN_PASSWORD}" "${ARGOCD_EXTRA_ARGS:-''}" --plaintext || {
+argocd login "${ARGOCD_SERVER}" --username ${ARGOCD_ADMIN_USERNAME} --password "${ARGOCD_ADMIN_PASSWORD}" "${ARGOCD_EXTRA_ARGS:-''}" || {
     echo "ERROR: ArgoCD login failed. Make sure to use admin account password!"
     exit 1
 }

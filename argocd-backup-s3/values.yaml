@@ -56,3 +56,12 @@ image:
 serviceAccount:
   irsaEnabled: false
   irsaRoleArn: "arn:aws:iam::123456789012:role/argocd-backup-role"
+
+
+# OVERRIDE entrypoint.sh 
+# custom_command:
+#   - /bin/bash
+#   - -c
+#   - |
+#     #!/bin/bash
+#     # OVERRIDE entrypoint.sh 

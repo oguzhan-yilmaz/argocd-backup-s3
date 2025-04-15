@@ -21,6 +21,9 @@ spec:
           - /bin/bash
           - -c
           - |
+            #!/bin/bash
+            set -e
+            set -o pipefail
             # ----------- ENV VAR CHECKS -----------
             for var in ARGOCD_SERVER ARGOCD_ADMIN_PASSWORD S3_BUCKET_NAME S3_UPLOAD_PREFIX; do
                 if [ -z "${!var}" ]; then
@@ -29,7 +32,6 @@ spec:
                 fi
             done
             echo "------------*------------*------------"
-
             # ----------- AWS CLI CHECKS -----------
             echo "CHECK: Do we have AWS S3 access to the $S3_BUCKET_NAME  bucket?"
             aws s3api head-bucket --bucket "$S3_BUCKET_NAME" || {
@@ -42,7 +44,12 @@ spec:
 
             # ----------- LOGIN TO ARGOCD -----------
             echo "Logging in to ArgoCD Server: ${ARGOCD_SERVER}"
-            argocd login "${ARGOCD_SERVER}" --username admin --password "${ARGOCD_ADMIN_PASSWORD}" --plaintext || {
+            if [ -z "${ARGOCD_ADMIN_USERNAME}" ];then
+              echo "WARNING: ARGOCD_ADMIN_USERNAME is empty; continue with 'admin user'"
+              export ARGOCD_ADMIN_USERNAME="admin"
+            fi
+
+            argocd login "${ARGOCD_SERVER}" --username ${ARGOCD_ADMIN_USERNAME} --password "${ARGOCD_ADMIN_PASSWORD}" "${ARGOCD_EXTRA_ARGS:-''}" || {
                 echo "ERROR: ArgoCD login failed. Make sure to use admin account password!"
                 exit 1
             }
@@ -70,7 +77,7 @@ spec:
 
             echo "Listing  s3://${S3_BUCKET_NAME}/${S3_UPLOAD_PREFIX}"
             echo "---"
-            aws s3 ls s3://${S3_BUCKET_NAME}/${S3_UPLOAD_PREFIX}        
+            aws s3 ls s3://${S3_BUCKET_NAME}/${S3_UPLOAD_PREFIX}  
       # ------------------- /valuesObject -------------------
 
   # Destination cluster and namespace to deploy the application
