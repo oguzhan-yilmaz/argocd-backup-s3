@@ -13,6 +13,7 @@ secretEnvVars:
   S3_UPLOAD_PREFIX: "my-argocd-backups/dev/"
   ARGOCD_SERVER: "argocd.argocd"
   ARGOCD_ADMIN_PASSWORD: ""
+  # ARGOCD_EXTRA_ARGS: "--insecure"
   # AWS_S3_ENDPOINT: 'https://s3.amazonaws.com'
 
 
