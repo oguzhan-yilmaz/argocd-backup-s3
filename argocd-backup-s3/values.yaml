@@ -12,6 +12,7 @@ secretEnvVars:
   S3_BUCKET_NAME: ""
   S3_UPLOAD_PREFIX: "my-argocd-backups/dev/"
   ARGOCD_SERVER: "argocd.argocd"
+  ARGOCD_ADMIN_USERNAME: "admin"
   ARGOCD_ADMIN_PASSWORD: ""
   # ARGOCD_EXPORT_EXTRA_ARGS: "-n openshift-gitops"
   # ARGOCD_EXTRA_ARGS: "--insecure"

@@ -238,6 +238,7 @@ jobs:
             echo "  S3_BUCKET_NAME: ${BUCKET_NAME}"
             echo "  S3_UPLOAD_PREFIX: my-argo-instance/"
             echo "  ARGOCD_SERVER: argocd-server.argocd"
+            echo "  ARGOCD_ADMIN_USERNAME: 'admin'"
             echo "  ARGOCD_ADMIN_PASSWORD: ''"
             echo "  AWS_ENDPOINT_URL_S3: 'https://s3.amazonaws.com'"
             ```
