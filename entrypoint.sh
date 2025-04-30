@@ -26,7 +26,7 @@ if [ -z "${ARGOCD_ADMIN_USERNAME}" ];then
   export ARGOCD_ADMIN_USERNAME="admin"
 fi
 
-argocd login "${ARGOCD_SERVER}" --username ${ARGOCD_ADMIN_USERNAME} --password "${ARGOCD_ADMIN_PASSWORD}" "${ARGOCD_EXTRA_ARGS:-''}" || {
+argocd login "${ARGOCD_SERVER}" --username ${ARGOCD_ADMIN_USERNAME} --password "${ARGOCD_ADMIN_PASSWORD}" "${ARGOCD_EXTRA_ARGS:-}" || {
     echo "ERROR: ArgoCD login failed. Make sure to use admin account password!"
     exit 1
 }
