@@ -173,6 +173,8 @@ echo "  AWS_ENDPOINT_URL_S3: 'https://s3.amazonaws.com'"
 - `timeZone`: Timezone for the CronJob (default: UTC)
 - `schedule`: Cron schedule for backups (default: "00 20 * * *")
 - `AWS_ENDPOINT_URL_S3`: Custom S3 endpoint for non-AWS S3 storage
+- `ARGOCD_ADMIN_USERNAME`: Custom ArgoCD Admin Username
+- `serviceAccount.irsaEnabled`: This value allows your pods to access AWS S3 API via IAM Role please check the <a href="https://aws.amazon.com/tr/blogs/opensource/introducing-fine-grained-iam-roles-service-accounts/">details</a>
 
 ## Credits
 
