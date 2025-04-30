@@ -179,7 +179,7 @@ echo "  AWS_ENDPOINT_URL_S3: 'https://s3.amazonaws.com'"
 ## Credits
 
 - [WoodProgrammer](https://github.com/WoodProgrammer): added Service Account EKS IRSA support 
-- [lieblinger](https://github.com/lieblinger): added `ca-certificates` and fixed ``
+- [lieblinger](https://github.com/lieblinger): added `ca-certificates` and fixed `ARGOCD_EXTRA_ARGS` in entrypoint script
 
 ## License
 
