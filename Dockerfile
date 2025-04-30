@@ -12,7 +12,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # Instead of just creating the user
 RUN apt-get update -y \
  && apt-get upgrade -y \
- && apt-get install --no-install-recommends -y curl tar unzip \
+ && apt-get install --no-install-recommends -y curl tar unzip ca-certificates \
  && apt-get autoremove \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* \
