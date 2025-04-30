@@ -13,7 +13,10 @@ secretEnvVars:
   S3_UPLOAD_PREFIX: "my-argocd-backups/dev/"
   ARGOCD_SERVER: "argocd.argocd"
   ARGOCD_ADMIN_PASSWORD: ""
-  # AWS_S3_ENDPOINT: 'https://s3.amazonaws.com'
+  
+  # If you want to use S3 compatible storage, you can use the following env var
+  #  https://docs.aws.amazon.com/sdkref/latest/guide/feature-ss-endpoints.html
+  # AWS_ENDPOINT_URL_S3: 'https://s3.amazonaws.com'
 
 envVarSecretReferences: []
 #  - name: ARGOCD_ADMIN_PASSWORD

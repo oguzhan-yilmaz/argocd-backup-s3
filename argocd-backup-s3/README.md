@@ -52,6 +52,9 @@ secretEnvVars:
   S3_BUCKET_NAME: ""
   ARGOCD_SERVER: ""
   ARGOCD_ADMIN_PASSWORD: ""
+  # If you want to use S3 compatible storage, you can use the following env var
+  #  https://docs.aws.amazon.com/sdkref/latest/guide/feature-ss-endpoints.html
+  # AWS_ENDPOINT_URL_S3: 'https://s3.amazonaws.com' 
 ```
 
 4. Install the chart:
@@ -147,7 +150,7 @@ echo "  S3_BUCKET_NAME: ${BUCKET_NAME}"
 echo "  S3_UPLOAD_PREFIX: my-argo-instance/"
 echo "  ARGOCD_SERVER: argocd-server.argocd"
 echo "  ARGOCD_ADMIN_PASSWORD: ''"
-echo "  AWS_S3_ENDPOINT: 'https://s3.amazonaws.com'"
+echo "  AWS_ENDPOINT_URL_S3: 'https://s3.amazonaws.com'"
 ```
 
 ## Configuration
@@ -166,7 +169,7 @@ echo "  AWS_S3_ENDPOINT: 'https://s3.amazonaws.com'"
 
 - `timeZone`: Timezone for the CronJob (default: UTC)
 - `schedule`: Cron schedule for backups (default: "00 20 * * *")
-- `AWS_S3_ENDPOINT`: Custom S3 endpoint for non-AWS S3 storage
+- `AWS_ENDPOINT_URL_S3`: Custom S3 endpoint for non-AWS S3 storage
 
 ## Credits
 

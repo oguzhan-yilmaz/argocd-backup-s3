@@ -52,6 +52,10 @@ secretEnvVars:
   S3_BUCKET_NAME: ""
   ARGOCD_SERVER: ""
   ARGOCD_ADMIN_PASSWORD: ""
+  # If you want to use S3 compatible storage, you can use the following env var
+  #  https://docs.aws.amazon.com/sdkref/latest/guide/feature-ss-endpoints.html
+  # AWS_ENDPOINT_URL_S3: 'https://s3.amazonaws.com' 
+
 ```
 
 4. Install the chart:
@@ -147,7 +151,7 @@ echo "  S3_BUCKET_NAME: ${BUCKET_NAME}"
 echo "  S3_UPLOAD_PREFIX: my-argo-instance/"
 echo "  ARGOCD_SERVER: argocd-server.argocd"
 echo "  ARGOCD_ADMIN_PASSWORD: ''"
-echo "  AWS_S3_ENDPOINT: 'https://s3.amazonaws.com'"
+echo "  AWS_ENDPOINT_URL_S3: 'https://s3.amazonaws.com'"
 ```
 
 ## Configuration
@@ -166,13 +170,13 @@ echo "  AWS_S3_ENDPOINT: 'https://s3.amazonaws.com'"
 
 - `timeZone`: Timezone for the CronJob (default: UTC)  <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>
 - `schedule`: Cron schedule for backups (default: "00 20 * * *")
-- `AWS_S3_ENDPOINT`: Custom S3 endpoint for non-AWS S3 storage
+- `AWS_ENDPOINT_URL_S3`: (env var) Custom S3 endpoint for non-AWS S3 storage
 - `serviceAccount.irsaEnabled`: This value allows your pods to access AWS S3 API via IAM Role please check the <a href="https://aws.amazon.com/tr/blogs/opensource/introducing-fine-grained-iam-roles-service-accounts/">details</a>
 
 ## Credits
 
 - [WoodProgrammer](https://github.com/WoodProgrammer): added Service Account EKS IRSA support 
-- [lieblinger](https://github.com/lieblinger): added `ca-certificates` and fixed `entrypoint.sh`
+- [lieblinger](https://github.com/lieblinger): added `ca-certificates` and fixed ``
 
 ## License
 
