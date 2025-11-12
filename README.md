@@ -69,6 +69,27 @@ helm upgrade --install \
   argocd-backup-s3 argocd-backup-s3/argocd-backup-s3
 ```
 
+5. Get the default values file for Azure Blob Storage:
+```bash
+helm show values argocd-backup-s3/argocd-backup-s3/azure-values.yaml > my-argocd-backup-azure.values.yaml
+```
+
+3. Configure the required values in `my-argocd-backup-azure.values.yaml`:
+```yaml
+timeZone: 'Asia/Istanbul'  # optional -- https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+schedule: "00 20 * * *"    # https://crontab.guru/#00_20_*_*_*
+
+secretEnvVars:
+  AZURE_STORAGE_ACCOUNT: ""
+  AZURE_STORAGE_CONTAINER: ""
+  AZURE_UPLOAD_PREFIX: "" 
+  AZURE_STORAGE_SAS_TOKEN: ""
+  ARGOCD_SERVER: ""
+  ARGOCD_ADMIN_USERNAME: ""
+  ARGOCD_ADMIN_PASSWORD: ""
+
+```
+
 4. Install the chart for Azure:
 
 ```bash
