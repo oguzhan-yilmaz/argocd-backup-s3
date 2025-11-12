@@ -22,10 +22,10 @@ spec:
         schedule: "00 20 * * *"    # https://crontab.guru/#00_20_*_*_*
 
         secretEnvVars:
-          AZURE_STORAGE_ACCOUNT: "argocdbckc1bf119f"
-          AZURE_STORAGE_CONTAINER: "argocd-backups"
+          AZURE_STORAGE_ACCOUNT: ""
+          AZURE_STORAGE_CONTAINER: ""
           AZURE_UPLOAD_PREFIX: "my-argocd-backups/dev/" 
-          AZURE_STORAGE_SAS_TOKEN: "se=2026-11-12T10%3A27Z&sp=wlc&sv=2022-11-02&ss=b&srt=co&sig=u8UWVFfUjjATZVQxFDaWXy7aC34840n9NGy8BkA2zSE%3D"
+          AZURE_STORAGE_SAS_TOKEN: ""
           ARGOCD_SERVER: "argocd.argocd"
           ARGOCD_ADMIN_USERNAME: "admin"
           ARGOCD_ADMIN_PASSWORD: ""

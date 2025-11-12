@@ -110,7 +110,6 @@ custom_command:
 
     echo "Export yaml file line count: $(wc -l $FILENAME)"
     echo "------------*------------*------------"
-    echo "------------*------------*------------"
 
     # ----------- AZURE UPLOAD -----------
     SAS_TOKEN_PREFIXED=$(echo "$AZURE_STORAGE_SAS_TOKEN")
@@ -123,7 +122,6 @@ custom_command:
 
     azcopy copy "${FILENAME}" "${BLOB_URL}" --blob-type BlockBlob || {
         echo ""
-        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
         echo "!!! AZCOPY UPLOAD FAILED !!!"
         echo "--- ERROR DETAILS ---"
         
@@ -132,18 +130,11 @@ custom_command:
         if [ -n "$AZCOPY_LOG_FILE" ]; then
             echo "Reading from azcopy log file: $AZCOPY_LOG_FILE"
             cat "$AZCOPY_LOG_FILE"
-        else
-            echo "azcopy log file not found."
         fi
-        
-        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
         exit 1 
     }
 
     echo "Azure Upload Complete."
-    echo "------------*------------*------------"
-
     echo "Cleaning up local file: ${FILENAME}"
     rm -f "${FILENAME}"
-
     echo "Backup process finished."
