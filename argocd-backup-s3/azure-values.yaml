@@ -126,12 +126,8 @@ custom_command:
         echo "--- ERROR DETAILS ---"
         
         AZCOPY_LOG_FILE=$(ls -t /argocdbackup/.azcopy/*.log | head -n 1)
-        
-        if [ -n "$AZCOPY_LOG_FILE" ]; then
-            echo "Reading from azcopy log file: $AZCOPY_LOG_FILE"
-            cat "$AZCOPY_LOG_FILE"
-        fi
-        exit 1 
+        echo "Reading from azcopy log file: $AZCOPY_LOG_FILE"
+        cat "$AZCOPY_LOG_FILE"
     }
 
     echo "Azure Upload Complete."

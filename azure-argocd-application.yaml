@@ -63,93 +63,80 @@ spec:
           pullPolicy: Always
 
         custom_command:
-          - /bin/bash
-          - -c
-          - |
-            #!/bin/bash
-            set -e
-            set -o pipefail
-            # ----------- ENV VAR CHECKS -----------
-            for var in ARGOCD_SERVER ARGOCD_ADMIN_PASSWORD AZURE_STORAGE_ACCOUNT AZURE_STORAGE_CONTAINER AZURE_STORAGE_SAS_TOKEN; do
-                if [ -z "${!var}" ]; then
-                    echo "ERROR: Env Var '$var' is not set. Aborting."
-                    exit 1
-                fi
-            done
+            - /bin/bash
+            - -c
+            - |
+              #!/bin/bash
+              set -e
+              set -o pipefail
+              # ----------- ENV VAR CHECKS -----------
+              for var in ARGOCD_SERVER ARGOCD_ADMIN_PASSWORD AZURE_STORAGE_ACCOUNT AZURE_STORAGE_CONTAINER AZURE_STORAGE_SAS_TOKEN; do
+                  if [ -z "${!var}" ]; then
+                      echo "ERROR: Env Var '$var' is not set. Aborting."
+                      exit 1
+                  fi
+              done
 
-            if [ -z "$AZURE_UPLOAD_PREFIX" ]; then
-                echo "ERROR: Env Var 'AZURE_UPLOAD_PREFIX' is not set. Aborting."
-                exit 1
-            fi
+              if [ -z "$AZURE_UPLOAD_PREFIX" ]; then
+                  echo "ERROR: Env Var 'AZURE_UPLOAD_PREFIX' is not set. Aborting."
+                  exit 1
+              fi
 
-            # ----------- LOGIN TO ARGOCD -----------
-            echo "Logging in to ArgoCD Server: ${ARGOCD_SERVER}"
-            if [ -z "${ARGOCD_ADMIN_USERNAME}" ];then
-              echo "ARGOCD_ADMIN_USERNAME env var is empty; defaulting to 'admin' user..."
-              export ARGOCD_ADMIN_USERNAME="admin"
-            fi
+              # ----------- LOGIN TO ARGOCD -----------
+              echo "Logging in to ArgoCD Server: ${ARGOCD_SERVER}"
+              if [ -z "${ARGOCD_ADMIN_USERNAME}" ];then
+                echo "ARGOCD_ADMIN_USERNAME env var is empty; defaulting to 'admin' user..."
+                export ARGOCD_ADMIN_USERNAME="admin"
+              fi
 
-            argocd login "${ARGOCD_SERVER}" --username ${ARGOCD_ADMIN_USERNAME} --password "${ARGOCD_ADMIN_PASSWORD}" ${ARGOCD_EXTRA_ARGS:-} || {
-                echo "ERROR: ArgoCD login failed. Make sure to use admin account password!"
-                exit 1
-            }
+              argocd login "${ARGOCD_SERVER}" --username ${ARGOCD_ADMIN_USERNAME} --password "${ARGOCD_ADMIN_PASSWORD}" ${ARGOCD_EXTRA_ARGS:-} || {
+                  echo "ERROR: ArgoCD login failed. Make sure to use admin account password!"
+                  exit 1
+              }
 
-            echo "Logged in to ArgoCD Server, checking current context: ${ARGOCD_SERVER}"
-            argocd context "${ARGOCD_EXTRA_ARGS:-}"
-            argocd account get-user-info "${ARGOCD_EXTRA_ARGS:-}"
-            echo "------------*------------*------------"
+              echo "Logged in to ArgoCD Server, checking current context: ${ARGOCD_SERVER}"
+              argocd context "${ARGOCD_EXTRA_ARGS:-}"
+              argocd account get-user-info "${ARGOCD_EXTRA_ARGS:-}"
+              echo "------------*------------*------------"
 
-            # ----------- ARGOCD EXPORT -----------
-            export FILENAME="argocd-export-$(date +"%Y-%m-%d--%H-%M").yaml"
-            echo "Setting the export filename to: ${FILENAME}"
+              # ----------- ARGOCD EXPORT -----------
+              export FILENAME="argocd-export-$(date +"%Y-%m-%d--%H-%M").yaml"
+              echo "Setting the export filename to: ${FILENAME}"
 
-            echo "Running the 'argocd admin export' command"
-            argocd admin export "${ARGOCD_EXPORT_EXTRA_ARGS:-}" > "$FILENAME"
+              echo "Running the 'argocd admin export' command"
+              argocd admin export "${ARGOCD_EXPORT_EXTRA_ARGS:-}" > "$FILENAME"
 
-            if [ ! -s "$FILENAME" ]; then
-                echo "ERROR: Export failed, generated file is empty. Aborting."
-                exit 1
-            fi
+              if [ ! -s "$FILENAME" ]; then
+                  echo "ERROR: Export failed, generated file is empty. Aborting."
+                  exit 1
+              fi
 
-            echo "Export yaml file line count: $(wc -l $FILENAME)"
-            echo "------------*------------*------------"
-            echo "------------*------------*------------"
+              echo "Export yaml file line count: $(wc -l $FILENAME)"
+              echo "------------*------------*------------"
 
-            # ----------- AZURE UPLOAD -----------
-            SAS_TOKEN_PREFIXED=$(echo "$AZURE_STORAGE_SAS_TOKEN" | sed 's/^\?*//' | sed 's/^/?/')
+              # ----------- AZURE UPLOAD -----------
+              SAS_TOKEN_PREFIXED=$(echo "$AZURE_STORAGE_SAS_TOKEN")
 
-            BLOB_PATH="${AZURE_UPLOAD_PREFIX%/}/${FILENAME}"
+              BLOB_PATH="${AZURE_UPLOAD_PREFIX%/}/${FILENAME}"
 
-            BLOB_URL="https://${AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/${AZURE_STORAGE_CONTAINER}/${BLOB_PATH}${SAS_TOKEN_PREFIXED}"
+              BLOB_URL="https://${AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/${AZURE_STORAGE_CONTAINER}/${BLOB_PATH}${SAS_TOKEN_PREFIXED}"
 
-            echo "Uploading to Azure Blob: https://${AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/${AZURE_STORAGE_CONTAINER}/${BLOB_PATH}"
+              echo "Uploading to Azure Blob: https://${AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/${AZURE_STORAGE_CONTAINER}/${BLOB_PATH}"
 
-            azcopy copy "${FILENAME}" "${BLOB_URL}" --blob-type BlockBlob || {
-                echo ""
-                echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-                echo "!!! AZCOPY UPLOAD FAILED !!!"
-                echo "--- ERROR DETAILS ---"
-                
-                AZCOPY_LOG_FILE=$(ls -t /argocdbackup/.azcopy/*.log | head -n 1)
-                
-                if [ -n "$AZCOPY_LOG_FILE" ]; then
-                    echo "Reading from azcopy log file: $AZCOPY_LOG_FILE"
-                    cat "$AZCOPY_LOG_FILE"
-                else
-                    echo "azcopy log file not found."
-                fi
-                
-                echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-                exit 1 
-            }
+              azcopy copy "${FILENAME}" "${BLOB_URL}" --blob-type BlockBlob || {
+                  echo ""
+                  echo "!!! AZCOPY UPLOAD FAILED !!!"
+                  echo "--- ERROR DETAILS ---"
+                  
+                  AZCOPY_LOG_FILE=$(ls -t /argocdbackup/.azcopy/*.log | head -n 1)
+                  echo "Reading from azcopy log file: $AZCOPY_LOG_FILE"
+                  cat "$AZCOPY_LOG_FILE"
+              }
 
-            echo "Azure Upload Complete."
-            echo "------------*------------*------------"
-
-            echo "Cleaning up local file: ${FILENAME}"
-            rm -f "${FILENAME}"
-
-            echo "Backup process finished."
+              echo "Azure Upload Complete."
+              echo "Cleaning up local file: ${FILENAME}"
+              rm -f "${FILENAME}"
+              echo "Backup process finished."
         
       # ------------------- /valuesObject -------------------
 
