@@ -35,6 +35,5 @@ USER argocdbackup
 
 COPY entrypoint.sh .
 
-
 ENTRYPOINT [ "bash", "entrypoint.sh" ]
 

@@ -1,0 +1,179 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-backup-s3
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://oguzhan-yilmaz.github.io/argocd-backup-s3/
+    targetRevision: '*.*.*'  # latest version
+
+    chart: argocd-backup-s3
+    helm:
+      releaseName: argocd-backup-s3
+
+      # Values file as block file. This takes precedence over values.yaml in the chart
+      # ------------------- valuesObject -------------------
+      valuesObject:
+        # comment out the timeZone if you want to keep things default
+        # https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/
+        timeZone: 'Asia/Istanbul'  # optional -- https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+        schedule: "00 20 * * *"    # https://crontab.guru/#00_20_*_*_*
+
+        secretEnvVars:
+          AZURE_STORAGE_ACCOUNT: "argocdbckc1bf119f"
+          AZURE_STORAGE_CONTAINER: "argocd-backups"
+          AZURE_UPLOAD_PREFIX: "my-argocd-backups/dev/" 
+          AZURE_STORAGE_SAS_TOKEN: "se=2026-11-12T10%3A27Z&sp=wlc&sv=2022-11-02&ss=b&srt=co&sig=u8UWVFfUjjATZVQxFDaWXy7aC34840n9NGy8BkA2zSE%3D"
+          ARGOCD_SERVER: "argocd.argocd"
+          ARGOCD_ADMIN_USERNAME: "admin"
+          ARGOCD_ADMIN_PASSWORD: ""
+          # If you want to use S3 compatible storage, you can use the following env var
+          #  https://docs.aws.amazon.com/sdkref/latest/guide/feature-ss-endpoints.html
+          # AWS_ENDPOINT_URL_S3: 'https://s3.amazonaws.com' 
+
+        envVarSecretReferences: []
+        #  - name: ARGOCD_ADMIN_PASSWORD
+        #  # remove the .secretEnvVars.ARGOCD_ADMIN_PASSWORD if you use this
+        #    valueFrom:
+        #      secretKeyRef:
+        #        name: argocd-initial-admin-secret
+        #        key: password
+
+        extraObjects: []
+        #  - apiVersion: v1
+        #    kind: Secret
+        #    metadata:
+        #      name: extra-secret
+        #    type: Opaque
+        #    stringData:
+        #      AAA: BBB
+
+        resources:
+          limits:
+            memory: "512Mi"
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+
+        image:
+          repository: "ghcr.io/oguzhan-yilmaz/argocd-backup-s3"
+          tag: "latest"
+          pullPolicy: Always
+
+        custom_command:
+          - /bin/bash
+          - -c
+          - |
+            #!/bin/bash
+            set -e
+            set -o pipefail
+            # ----------- ENV VAR CHECKS -----------
+            for var in ARGOCD_SERVER ARGOCD_ADMIN_PASSWORD AZURE_STORAGE_ACCOUNT AZURE_STORAGE_CONTAINER AZURE_STORAGE_SAS_TOKEN; do
+                if [ -z "${!var}" ]; then
+                    echo "ERROR: Env Var '$var' is not set. Aborting."
+                    exit 1
+                fi
+            done
+
+            if [ -z "$AZURE_UPLOAD_PREFIX" ]; then
+                echo "ERROR: Env Var 'AZURE_UPLOAD_PREFIX' is not set. Aborting."
+                exit 1
+            fi
+
+            # ----------- LOGIN TO ARGOCD -----------
+            echo "Logging in to ArgoCD Server: ${ARGOCD_SERVER}"
+            if [ -z "${ARGOCD_ADMIN_USERNAME}" ];then
+              echo "ARGOCD_ADMIN_USERNAME env var is empty; defaulting to 'admin' user..."
+              export ARGOCD_ADMIN_USERNAME="admin"
+            fi
+
+            argocd login "${ARGOCD_SERVER}" --username ${ARGOCD_ADMIN_USERNAME} --password "${ARGOCD_ADMIN_PASSWORD}" ${ARGOCD_EXTRA_ARGS:-} || {
+                echo "ERROR: ArgoCD login failed. Make sure to use admin account password!"
+                exit 1
+            }
+
+            echo "Logged in to ArgoCD Server, checking current context: ${ARGOCD_SERVER}"
+            argocd context "${ARGOCD_EXTRA_ARGS:-}"
+            argocd account get-user-info "${ARGOCD_EXTRA_ARGS:-}"
+            echo "------------*------------*------------"
+
+            # ----------- ARGOCD EXPORT -----------
+            export FILENAME="argocd-export-$(date +"%Y-%m-%d--%H-%M").yaml"
+            echo "Setting the export filename to: ${FILENAME}"
+
+            echo "Running the 'argocd admin export' command"
+            argocd admin export "${ARGOCD_EXPORT_EXTRA_ARGS:-}" > "$FILENAME"
+
+            if [ ! -s "$FILENAME" ]; then
+                echo "ERROR: Export failed, generated file is empty. Aborting."
+                exit 1
+            fi
+
+            echo "Export yaml file line count: $(wc -l $FILENAME)"
+            echo "------------*------------*------------"
+            echo "------------*------------*------------"
+
+            # ----------- AZURE UPLOAD -----------
+            SAS_TOKEN_PREFIXED=$(echo "$AZURE_STORAGE_SAS_TOKEN" | sed 's/^\?*//' | sed 's/^/?/')
+
+            BLOB_PATH="${AZURE_UPLOAD_PREFIX%/}/${FILENAME}"
+
+            BLOB_URL="https://${AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/${AZURE_STORAGE_CONTAINER}/${BLOB_PATH}${SAS_TOKEN_PREFIXED}"
+
+            echo "Uploading to Azure Blob: https://${AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/${AZURE_STORAGE_CONTAINER}/${BLOB_PATH}"
+
+            azcopy copy "${FILENAME}" "${BLOB_URL}" --blob-type BlockBlob || {
+                echo ""
+                echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+                echo "!!! AZCOPY UPLOAD FAILED !!!"
+                echo "--- ERROR DETAILS ---"
+                
+                AZCOPY_LOG_FILE=$(ls -t /argocdbackup/.azcopy/*.log | head -n 1)
+                
+                if [ -n "$AZCOPY_LOG_FILE" ]; then
+                    echo "Reading from azcopy log file: $AZCOPY_LOG_FILE"
+                    cat "$AZCOPY_LOG_FILE"
+                else
+                    echo "azcopy log file not found."
+                fi
+                
+                echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+                exit 1 
+            }
+
+            echo "Azure Upload Complete."
+            echo "------------*------------*------------"
+
+            echo "Cleaning up local file: ${FILENAME}"
+            rm -f "${FILENAME}"
+
+            echo "Backup process finished."
+        
+      # ------------------- /valuesObject -------------------
+
+  # Destination cluster and namespace to deploy the application
+  destination:
+    name: in-cluster
+    namespace: argocd
+    # namespace: monitoring
+
+  # Extra information to show in the Argo CD Application details tab
+  info:
+    - name: 'Github Repo'
+      value: 'https://github.com/oguzhan-yilmaz/argocd-backup-s3'
+
+  # Sync policy
+  syncPolicy:
+    automated: # automated sync by default retries failed attempts 5 times with following delays between attempts ( 5s, 10s, 20s, 40s, 80s ); retry controlled using `retry` field.
+      prune: true # Specifies if resources should be pruned during auto-syncing ( false by default ).
+      selfHeal: true # Specifies if partial app sync should be executed when resources are changed only in target Kubernetes cluster and no git change detected ( false by default ).
+    syncOptions:     # Sync options which modifies sync behavior
+    - Validate=false # disables resource validation (equivalent to 'kubectl apply --validate=false') ( true by default ).
+    - CreateNamespace=true # Namespace Auto-Creation ensures that namespace specified as the application destination exists in the destination cluster.
+    - PrunePropagationPolicy=foreground # Supported policies are background, foreground and orphan.
+    - PruneLast=true # Allow the ability for resource pruning to happen as a final, implicit wave of a sync operation
+    - ApplyOutOfSyncOnly=true # Only sync out-of-sync resources, rather than applying every object in the application
+
+  revisionHistoryLimit: 5
