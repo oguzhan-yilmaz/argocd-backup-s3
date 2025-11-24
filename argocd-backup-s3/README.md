@@ -9,30 +9,29 @@
 
 - 🔄 Automated backups using Kubernetes CronJob
 - 📦 Uses official `argocd admin export` command for reliable backups
-- 🗄️ Supports any S3-compatible storage (AWS S3, MinIO, etc.)
+- 🗄️ Supports **any S3-compatible storage** (AWS S3, MinIO, etc.) and **Azure Blob Storage**
 - 🔒 Secure credential management through Kubernetes secrets
 - 🚀 Easy deployment via Helm chart or ArgoCD application
 - ⏰ Configurable backup schedule and timezone
-- 🔍 Detailed logging and error reporting
 
-## Quick Links
+#### Quick Links
 
 - 🐋 [Docker Image](https://github.com/oguzhan-yilmaz/argocd-backup-s3/pkgs/container/argocd-backup-s3)
-- 📜 [Helm Package](https://artifacthub.io/packages/helm/argocd-backup-s3/argocd-backup-s3)
-- 🔰 [Helm Index](https://oguzhan-yilmaz.github.io/argocd-backup-s3/)
+- 📜 [ArtifactHub](https://artifacthub.io/packages/helm/argocd-backup-s3/argocd-backup-s3)
 - 📝 [Github Releases](https://github.com/oguzhan-yilmaz/argocd-backup-s3/releases)
 
 ---
 
 ## Installation
 
-### Option 1: Install with Helm
+### Install with Helm
 
 1. Add the Helm repository:
 ```bash
 helm repo add argocd-backup-s3 https://oguzhan-yilmaz.github.io/argocd-backup-s3/
 helm repo update argocd-backup-s3
 ```
+
 
 2. Get the default values file:
 ```bash
@@ -41,8 +40,8 @@ helm show values argocd-backup-s3/argocd-backup-s3 > my-argocd-backup-s3.values.
 
 3. Configure the required values in `my-argocd-backup-s3.values.yaml`:
 ```yaml
-timeZone: 'Asia/Istanbul'  # optional
-schedule: "00 20 * * *"    # https://crontab.guru/#00_20_*_*_* 
+timeZone: 'Asia/Istanbul'  # optional -- https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+schedule: "00 20 * * *"    # https://crontab.guru/#00_20_*_*_*
 
 secretEnvVars:
   AWS_ACCESS_KEY_ID: ""
@@ -54,7 +53,7 @@ secretEnvVars:
   ARGOCD_ADMIN_USERNAME: "admin"
   ARGOCD_ADMIN_PASSWORD: ""
 
-# If you want to use S3 compatible storage, you can use the following env var
+  # If you want to use S3 compatible storage, you can use the following env var
   #  https://docs.aws.amazon.com/sdkref/latest/guide/feature-ss-endpoints.html
   # AWS_ENDPOINT_URL_S3: 'https://s3.amazonaws.com' 
 ```
@@ -67,7 +66,21 @@ helm upgrade --install \
   argocd-backup-s3 argocd-backup-s3/argocd-backup-s3
 ```
 
-### Option 2: Install with ArgoCD
+### Helm — Use Azure Blob Storage 
+
+```bash
+curl -sL https://raw.githubusercontent.com/oguzhan-yilmaz/argocd-backup-s3/refs/heads/main/argocd-backup-s3/azure-blob.values.yaml -o azure-blob.values.yaml
+
+# Configure the required values in `azure-blob.values.yaml`:
+
+helm upgrade --install \
+  -n argocd \
+  -f azure-blob.values.yaml \
+  argocd-backup-s3 argocd-backup-s3/argocd-backup-s3
+```
+---
+
+## Install with ArgoCD
 
 1. Download the ArgoCD application manifest:
 ```bash
@@ -75,90 +88,44 @@ curl -sL https://raw.githubusercontent.com/oguzhan-yilmaz/argocd-backup-s3/refs/
 ```
 
 2. Edit the `.valuesObject` section in the manifest with your configuration
+
+
 3. Apply the manifest:
 ```bash
 kubectl apply -f argocd-backup-s3.argoapp.yaml
 ```
 
+#### ArgoCD Application: Run Custom Entrypoint Script 
+```bash
+# 1. Download the ArgoCD application manifest:
+curl -sL https://raw.githubusercontent.com/oguzhan-yilmaz/argocd-backup-s3/refs/heads/main/custom-command.argocd-application.yaml -o custom-command.argocd-application.yaml
+
+# 2. Edit the `.valuesObject` section in the manifest with your configuration
+
+# 3. Apply the manifest:
+kubectl apply -f custom-command.argocd-application.yaml
+```
+
+
+#### ArgoCD Application: Use Azure Blob Storage
+```bash
+# 1. Download the ArgoCD application manifest:
+curl -sL https://raw.githubusercontent.com/oguzhan-yilmaz/argocd-backup-s3/refs/heads/main/azure-blob.argocd-application.yaml -o azure-blob.argocd-application.yaml
+
+# 2. Edit the `.valuesObject` section in the manifest with your configuration
+
+kubectl apply -f azure-blob.argocd-application.yaml
+```
+
+
+
 ---
 
-## AWS S3 Setup
 
-The following script helps you set up the required AWS resources (S3 bucket and IAM user) for the backup solution:
-
-```bash
-# Set your company prefix
-PREFIX="mycompany-argocd-backup-s3"
-
-# Get AWS Account Info
-AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-AWS_REGION=$(aws configure get region 2>/dev/null || echo "eu-west-1")
-
-echo "AWS_ACCOUNT_ID: ${AWS_ACCOUNT_ID}"
-echo "AWS_REGION: ${AWS_REGION}"
-
-# Create bucket name using AWS Account ID as suffix
-BUCKET_NAME="${PREFIX}-${AWS_ACCOUNT_ID}"
-IAM_USER_NAME="${BUCKET_NAME}"
-
-echo "BUCKET_NAME: ${BUCKET_NAME}"
-echo "IAM_USER_NAME: ${IAM_USER_NAME}"
-
-# Create S3 Bucket
-aws s3 mb "s3://${BUCKET_NAME}" --region "${AWS_REGION}"
-
-# Create IAM User and Policy
-aws iam create-user --user-name "${IAM_USER_NAME}"
-
-POLICY_NAME="${IAM_USER_NAME}-bucket-access-policy"
-aws iam create-policy \
-    --policy-name "${POLICY_NAME}" \
-    --policy-document '{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "s3:PutObject",
-                "s3:GetObject",
-                "s3:ListBucket",
-                "s3:DeleteObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::'"${BUCKET_NAME}"'",
-                "arn:aws:s3:::'"${BUCKET_NAME}"'/*"
-            ]
-        }
-    ]
-}'
-
-# Attach Policy to User
-aws iam attach-user-policy \
-    --user-name "${IAM_USER_NAME}" \
-    --policy-arn "$(aws iam list-policies --query "Policies[?PolicyName=='${POLICY_NAME}'].Arn" --output text)"
-
-# Create Access Keys
-CREDENTIALS=$(aws iam create-access-key --user-name "${IAM_USER_NAME}")
-
-# Print Helm Values
-echo "------ SUCCESS ------"
-echo "Helm values.yaml:"
-echo ""
-echo "secretEnvVars:"
-echo "  AWS_ACCESS_KEY_ID: '$(echo "${CREDENTIALS}" | jq -r '.AccessKey.AccessKeyId')'"
-echo "  AWS_SECRET_ACCESS_KEY: '$(echo "${CREDENTIALS}" | jq -r '.AccessKey.SecretAccessKey')'"
-echo "  AWS_DEFAULT_REGION: ${AWS_REGION}"
-echo "  S3_BUCKET_NAME: ${BUCKET_NAME}"
-echo "  S3_UPLOAD_PREFIX: my-argo-instance/"
-echo "  ARGOCD_SERVER: argocd-server.argocd"
-echo "  ARGOCD_ADMIN_USERNAME: admin"
-echo "  ARGOCD_ADMIN_PASSWORD: ''"
-echo "  AWS_ENDPOINT_URL_S3: 'https://s3.amazonaws.com'"
-```
 
 ## Configuration
 
-### Required Environment Variables
+### Required Environment Variables for AWS
 
 - `AWS_ACCESS_KEY_ID`: AWS access key for S3 access
 - `AWS_SECRET_ACCESS_KEY`: AWS secret key for S3 access
@@ -168,20 +135,41 @@ echo "  AWS_ENDPOINT_URL_S3: 'https://s3.amazonaws.com'"
 - `ARGOCD_SERVER`: ArgoCD server address
 - `ARGOCD_ADMIN_PASSWORD`: ArgoCD admin password
 
+
+### Required Environment Variables for AZURE Blob Storage
+
+- `AZURE_STORAGE_ACCOUNT`: Azure Storage Account for Blob Storage
+- `AZURE_STORAGE_CONTAINER`: Azure Container for Blob Storage
+- `AZURE_STORAGE_SAS_TOKEN`: Azure Access Token for Blob Storage
+- `AZURE_UPLOAD_PREFIX`: Prefix for uploaded backup files
+- `ARGOCD_SERVER`: ArgoCD server address
+- `ARGOCD_ADMIN_PASSWORD`: ArgoCD admin password
+
+
 ### Optional Configuration
 
-- `timeZone`: Timezone for the CronJob (default: UTC)
+- `timeZone`: Timezone for the CronJob (default: UTC)  <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>
 - `schedule`: Cron schedule for backups (default: "00 20 * * *")
-- `AWS_ENDPOINT_URL_S3`: Custom S3 endpoint for non-AWS S3 storage
+- `AWS_ENDPOINT_URL_S3`: (env var) Custom S3 endpoint for non-AWS S3 storage
 - `ARGOCD_ADMIN_USERNAME`: Custom ArgoCD Admin Username
 - `serviceAccount.irsaEnabled`: This value allows your pods to access AWS S3 API via IAM Role please check the <a href="https://aws.amazon.com/tr/blogs/opensource/introducing-fine-grained-iam-roles-service-accounts/">details</a>
+
+
+## Setup Helpers 
+- **AWS S3 Setup Script**
+  The following script helps you set up the required AWS resources (S3 bucket and IAM user) for the backup solution:
+  - [create-iam-user-and-s3-bucket.sh](./create-iam-user-and-s3-bucket.sh)
+
+- **Azure Setup Script**
+  The following script helps you set up the required Azure resources (Resource Group, Storage Account, Container and SAS Token ) for the backup solution:
+  - [create-azure-blob-storage-and-sastoken.sh](./create-azure-blob-storage-and-sastoken.sh)
 
 ## Credits
 
 - [WoodProgrammer](https://github.com/WoodProgrammer): added Service Account EKS IRSA support 
+- [lieblinger](https://github.com/lieblinger): added `ca-certificates` and fixed `ARGOCD_EXTRA_ARGS` in entrypoint script
+- [ersinsari13](https://github.com/ersinsari13): added Azure Blob Storage support  
 
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
-
-
