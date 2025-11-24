@@ -12,14 +12,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -y \
  && apt-get upgrade -y \
  && apt-get install --no-install-recommends -y curl tar unzip ca-certificates gpg lsb-release \
- \
- #azcopy ınstallation
  && echo "Installing AzCopy..." \
  && curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/microsoft.gpg \
  && echo "deb [arch=amd64] https://packages.microsoft.com/debian/$(lsb_release -rs)/prod $(lsb_release -cs) main" > /etc/apt/sources.list.d/microsoft-prod.list \
  && apt-get update -y \
  && apt-get install -y azcopy \
- \
  && apt-get autoremove \
  && apt-get clean \
  && rm -rf /var/lib/apt/lists/* \
@@ -29,7 +26,7 @@ RUN apt-get update -y \
  && chown -R argocdbackup:argocdbackup /argocdbackup
 
 WORKDIR /argocdbackup
-ENV HOME /argocdbackup
+ENV HOME=/argocdbackup
 
 # get the aws cli from it's docker image
 COPY --from=awscli /usr/local/aws-cli /usr/local/aws-cli
