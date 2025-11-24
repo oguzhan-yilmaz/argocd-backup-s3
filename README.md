@@ -74,7 +74,7 @@ helm upgrade --install \
 helm show values argocd-backup-s3/argocd-backup-s3/azure-values.yaml > my-argocd-backup-azure.values.yaml
 ```
 
-3. Configure the required values in `my-argocd-backup-azure.values.yaml`:
+3. Configure the required values in `azure-blob.values.yaml`:
 ```yaml
 timeZone: 'Asia/Istanbul'  # optional -- https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 schedule: "00 20 * * *"    # https://crontab.guru/#00_20_*_*_*
@@ -109,7 +109,7 @@ curl -sL https://raw.githubusercontent.com/oguzhan-yilmaz/argocd-backup-s3/refs/
 - Download the ArgoCD application manifest for Azure Blob Storage
 
 ```bash
-curl -sL https://raw.githubusercontent.com/oguzhan-yilmaz/argocd-backup-s3/refs/heads/main/azure-argocd-application.yaml -o argocd-backup-azure.argoapp.yaml
+curl -sL https://raw.githubusercontent.com/oguzhan-yilmaz/argocd-backup-s3/refs/heads/main/azure-blob.argocd-application.yaml -o argocd-backup-azure.argoapp.yaml
 ```
 
 2. Edit the `.valuesObject` section in the manifest with your configuration

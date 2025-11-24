@@ -38,10 +38,8 @@ RUN ln -s /usr/local/aws-cli/v2/current/bin/aws /usr/local/bin/aws
 # get the argocd cli from it's docker image
 COPY --from=argocd /usr/local/bin/argocd /usr/local/bin/argocd
 
-# ÖNCE 'root' olarak 'entrypoint.sh' dosyasını kopyala ve izinlerini ayarla
 COPY entrypoint.sh .
 
-# ŞİMDİ, tüm hazırlıklar bittikten sonra, güvenli kullanıcıya geçiş yap
 USER argocdbackup
 
 ENTRYPOINT [ "bash", "entrypoint.sh" ]
