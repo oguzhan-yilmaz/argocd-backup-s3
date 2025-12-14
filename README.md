@@ -14,14 +14,6 @@
 - 🚀 Easy deployment via Helm chart or ArgoCD application
 - ⏰ Configurable backup schedule and timezone
 
-#### Quick Links
-
-- 🐋 [Docker Image](https://github.com/oguzhan-yilmaz/argocd-backup-s3/pkgs/container/argocd-backup-s3)
-- 📜 [ArtifactHub](https://artifacthub.io/packages/helm/argocd-backup-s3/argocd-backup-s3)
-- 📝 [Github Releases](https://github.com/oguzhan-yilmaz/argocd-backup-s3/releases)
-
----
-
 ## Installation
 
 ### Install with Helm
@@ -163,6 +155,12 @@ kubectl apply -f azure-blob.argocd-application.yaml
 - **Azure Setup Script**
   The following script helps you set up the required Azure resources (Resource Group, Storage Account, Container and SAS Token ) for the backup solution:
   - [create-azure-blob-storage-and-sastoken.sh](./create-azure-blob-storage-and-sastoken.sh)
+
+## Quick Links
+
+- 🐋 [Docker Image](https://github.com/oguzhan-yilmaz/argocd-backup-s3/pkgs/container/argocd-backup-s3)
+- 📜 [ArtifactHub](https://artifacthub.io/packages/helm/argocd-backup-s3/argocd-backup-s3)
+- 📝 [Github Releases](https://github.com/oguzhan-yilmaz/argocd-backup-s3/releases)
 
 ## Credits
 
